@@ -1,5 +1,8 @@
 #include "lab.h"
 
+//mutexがあるとないで、thread_funcの出力内容が変わるので確認
+//フィロの実装では、pthread_createの第四引数には色々情報を持った構造体のアドレスを渡すことになりそう
+
 pthread_mutex_t mutex;
 
 void	*thread_func(void *var)
@@ -30,4 +33,4 @@ int	main(void)
 	system("leaks a.out");
 	return (0);
 }
-//pthread_detach
+//pthread_detach//スレッドの終了を待たない
