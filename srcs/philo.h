@@ -8,17 +8,31 @@
 #include <libc.h>
 #include <stdbool.h>
 
-typedef struct s_state
+typedef struct s_philo_data
 {
-	pthread_t		*threads;
+	pthread_t		thread_id;
 	pthread_mutex_t	*forks;
-	int				number_of_philosophers;
+	int				order;
+	int				rfork;
+	int				lfork;
 	long			time_to_die;
 	long			time_to_eat;
 	long			time_to_sleep;
 	long			time_last_eat;
 	long			time_tobe_satisfied;
+	char			*someone_died;
+}	t_thread_data;
+
+typedef struct s_manage_data
+{
+	t_thread_data	*threads;
+	pthread_mutex_t	*forks;
+	int				number_of_philosophers;
+	long			time_to_die;
+	long			time_to_eat;
+	long			time_to_sleep;
+	long			time_tobe_satisfied;
 	char			someone_died;
-}	t_state;
+}	t_manage_data;
 
 #endif
