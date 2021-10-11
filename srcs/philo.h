@@ -8,6 +8,9 @@
 #include <libc.h>
 #include <stdbool.h>
 
+# define SUCCESS 0
+# define FAIL 1
+
 typedef struct s_philo_data
 {
 	pthread_t		thread_id;
