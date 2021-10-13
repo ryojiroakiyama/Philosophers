@@ -11,13 +11,12 @@
 # define SUCCESS 0
 # define FAIL 1
 
-typedef struct s_philo_data
+typedef struct s_thread_data
 {
 	pthread_t		thread_id;
-	pthread_mutex_t	*forks;
 	int				order;
-	int				rfork;
-	int				lfork;
+	pthread_mutex_t	*right_fork;
+	pthread_mutex_t	*left_fork;
 	long			time_to_die;
 	long			time_to_eat;
 	long			time_to_sleep;
