@@ -83,25 +83,31 @@ char	set_manage_data_time(char **argv, t_manage_data *mdata)
 
 	mdata->number_of_philosophers = ft_atoi(argv[1], &nonnum_check);
 	if (mdata->number_of_philosophers < 0 || nonnum_check)
-		return (1);
+		return (put_arg_error(argv[1]));
 	mdata->time_to_die = ft_atol(argv[2], &nonnum_check);
 	if (mdata->time_to_die < 0 || nonnum_check)
-		return (1);
+		return (put_arg_error(argv[2]));
 	mdata->time_to_eat = ft_atol(argv[3], &nonnum_check);
 	if (mdata->time_to_eat < 0 || nonnum_check)
-		return (1);
+		return (put_arg_error(argv[3]));
 	mdata->time_to_sleep = ft_atol(argv[4], &nonnum_check);
 	if (mdata->time_to_sleep < 0 || nonnum_check)
-		return (1);
+		return (put_arg_error(argv[4]));
 	if (argv[5])
 	{
 		mdata->time_tobe_satisfied = ft_atol(argv[5], &nonnum_check);
 		if (mdata->time_tobe_satisfied < 0 || nonnum_check)
-			return (1);
+			return (put_arg_error(argv[5]));
 	}
 	else
 		mdata->time_tobe_satisfied = -1;
 	return (0);
+}
+
+char	put_error(char *message)
+{
+	printf("error: %s\n", message);
+	return (1);
 }
 
 char	put_arg_error(char *message)
@@ -140,12 +146,6 @@ void	put_thread_data(t_thread_data *tdata)
 	printf("someone_died           %d\n", *(tdata->someone_died));
 }
 
-char	put_error(char *message)
-{
-	printf("error: %s\n", message);
-	return (1);
-}
-
 char	set_manage_data(t_manage_data *mdata)
 {
 	mdata->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->number_of_philosophers);
@@ -153,10 +153,7 @@ char	set_manage_data(t_manage_data *mdata)
 		return (put_error("malloc for forks"));
 	mdata->threads = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->number_of_philosophers);
 	if (!mdata->threads)
-	{
-		free(mdata->forks);
 		return (put_error("malloc for threads"));
-	}
 	mdata->someone_died = 0;
 	return (0);
 }
@@ -187,31 +184,45 @@ char	set_thread_data(t_manage_data *mdata)
 	return (0);
 }
 
-void	*philosopher(void *data)
+long	gettimeofday_milisecond()
 {
 	struct timeval 	tv;
-	t_thread_data	*tdata;
 
 	if (gettimeofday(&tv, NULL) == -1)
 	{
 		put_error("gettimeofday");
-		return (0);
+		return (-1);
 	}
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
+void	*philosopher(void *data)
+{
+	t_thread_data	*tdata;
+
 	tdata = (t_thread_data *)data;
-	tdata->time_last_eat = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+	if ()
+	tdata->time_last_eat = gettimeofday_milisecond();
+	if(tdata->time_last_eat < 0)
+		return (NULL);
+	if (tdata->order % 2 == 1)
+		usleep(200);
 	pthread_mutex_lock(tdata->forks + tdata->rfork);
-	pthread_mutex_lock(tdata->forks + tdata->lfork);
-	put_thread_data(tdata);
+	gettimeofday(&tv, NULL) == -1;
+	
 	pthread_mutex_unlock(tdata->forks + tdata->rfork);
-	pthread_mutex_unlock(tdata->forks + tdata->lfork);
-	return (0);
+	return (data);
 }
 
 char	run_thread(t_manage_data *mdata)
 {
 	t_thread_data	*thread;
 	int				thread_cnt;
+	long			time_start;
 
+	time_start = gettimeofday_milisecond();
+	if (time_start < 0)
+		return (1);
 	thread_cnt = mdata->number_of_philosophers;
 	while (thread_cnt--)
 	{
@@ -232,23 +243,27 @@ char	run_thread(t_manage_data *mdata)
 int	main(int argc, char **argv)
 {
 	t_manage_data	mdata;
+	char			return_status;
 
 	if (!(5 <= argc && argc <= 6))
 		return (put_arg_error("number of argument"));
-	if (set_manage_data_time(argv, &mdata))
-		return (put_arg_error("type of argument"));
-	if (set_manage_data(&mdata))
-		return (1);
-	if (set_thread_data(&mdata))
-		return (1);
-	// put_manage_data(&mdata);
-	// exit(0);
-	if (run_thread(&mdata))
-		return (1);
+	mdata.forks = NULL;
+	mdata.threads = NULL;
+	return_status = FAIL;
+	if (set_manage_data_time(argv, &mdata) == SUCCESS)
+	{
+		if (set_manage_data(&mdata) == SUCCESS)
+		{
+			if (set_thread_data(&mdata) == SUCCESS)
+			{
+				if (run_thread(&mdata) == SUCCESS)
+					return_status = SUCCESS;
+			}
+		}
+	}
 	free(mdata.threads);
 	free(mdata.forks);
 	// if (system("leaks a.out >/dev/null"))
 	// 	system("leaks a.out");
-	return (0);
+	return (return_status);
 }
-//片岡さんはモニターを一つ作って、そいつでそれぞれ最後に食べた時間から考えてどれか死んだかを計算して考えてるらしい
