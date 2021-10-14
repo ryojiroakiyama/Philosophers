@@ -22,7 +22,7 @@ typedef struct s_thread_data
 	long			time_to_sleep;
 	long			time_last_eat;
 	long			time_tobe_satisfied;
-	char			*someone_died;
+	char			*death_flag;
 }	t_thread_data;
 
 typedef struct s_manage_data
@@ -34,7 +34,7 @@ typedef struct s_manage_data
 	long			time_to_eat;
 	long			time_to_sleep;
 	long			time_tobe_satisfied;
-	char			someone_died;
+	char			death_flag;
 }	t_manage_data;
 
 #endif

@@ -114,7 +114,7 @@ void	put_thread_data(t_thread_data *tdata)
 	printf("time_to_sleep          %ld\n", tdata->time_to_sleep);
 	printf("time_last_eat          %ld\n", tdata->time_last_eat);
 	printf("time_tobe_satisfied    %ld\n", tdata->time_tobe_satisfied);
-	printf("someone_died           %d\n", *(tdata->someone_died));
+	printf("death_flag           %d\n", *(tdata->death_flag));
 }
 
 char	set_manage_data_time(char **argv, t_manage_data *mdata)
@@ -154,31 +154,31 @@ char	set_manage_data(char **argv, t_manage_data *mdata)
 	mdata->threads = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->number_of_philosophers);
 	if (!mdata->threads)
 		return (put_error("malloc for threads"));
-	mdata->someone_died = 0;
+	mdata->death_flag = 0;
 	return (SUCCESS);
 }
 
 char	set_thread_data(t_manage_data *mdata)
 {
 	t_thread_data	*thread;
-	int				thread_cnt;
+	int				thread_index;
 
-	thread_cnt = mdata->number_of_philosophers;
-	while (thread_cnt--)
+	thread_index = mdata->number_of_philosophers;
+	while (thread_index--)
 	{
-		thread = mdata->threads + thread_cnt;
-		thread->order = thread_cnt;
-		if (thread->order == 0)
+		thread = mdata->threads + thread_index;
+		thread->order = thread_index + 1;
+		if (thread_index == 0)
 			thread->right_fork = mdata->forks + (mdata->number_of_philosophers - 1);
 		else
-			thread->right_fork = mdata->forks + (thread->order - 1);
-		thread->left_fork = mdata->forks + thread->order;
+			thread->right_fork = mdata->forks + (thread_index - 1);
+		thread->left_fork = mdata->forks + thread_index;
 		thread->time_to_die = mdata->time_to_die;
 		thread->time_to_eat = mdata->time_to_eat;
 		thread->time_to_sleep = mdata->time_to_sleep;
 		thread->time_tobe_satisfied = mdata->time_tobe_satisfied;
-		thread->someone_died = &(mdata->someone_died);
-		pthread_mutex_init(mdata->forks + thread_cnt, NULL);
+		thread->death_flag = &(mdata->death_flag);
+		pthread_mutex_init(mdata->forks + thread_index, NULL);
 	}
 	return (SUCCESS);
 }
@@ -195,6 +195,12 @@ long	gettimeofday_milisecond()
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
+void	philo_eating(t_thread_data *tdata)
+{
+	printf("%ld %d is eating\n", gettimeofday_milisecond(), tdata->order);
+	usleep(tdata->time_to_eat * 1000);//最初からusにしとく？
+}
+
 void	*philosopher(void *data)
 {
 	t_thread_data	*tdata;
@@ -204,8 +210,7 @@ void	*philosopher(void *data)
 		usleep(200);
 	pthread_mutex_lock(tdata->right_fork);
 	pthread_mutex_lock(tdata->left_fork);
-	printf("philo_order : %d\n", tdata->order);
-	// philo_eating();
+	philo_eating(tdata);
 	pthread_mutex_unlock(tdata->right_fork);
 	pthread_mutex_unlock(tdata->left_fork);
 	// philo_sleeping();
@@ -216,26 +221,26 @@ void	*philosopher(void *data)
 char	run_thread(t_manage_data *mdata)
 {
 	t_thread_data	*thread;
-	int				thread_cnt;
+	int				thread_index;
 	long			time_start;
 
 	time_start = gettimeofday_milisecond();
 	if (time_start < 0)
 		return (FAIL);
-	thread_cnt = mdata->number_of_philosophers;
-	while (thread_cnt--)
+	thread_index = mdata->number_of_philosophers;
+	while (thread_index--)
 	{
-		thread = mdata->threads + thread_cnt;
+		thread = mdata->threads + thread_index;
 		thread->time_last_eat = time_start;
 		pthread_create(&(thread->thread_id), NULL, &philosopher, thread);
 	}
-	thread_cnt++;
-	while (thread_cnt < mdata->number_of_philosophers)
+	thread_index++;
+	while (thread_index < mdata->number_of_philosophers)
 	{
-		thread = mdata->threads + thread_cnt;
+		thread = mdata->threads + thread_index;
 		pthread_join(thread->thread_id, NULL);
-		pthread_mutex_destroy(mdata->forks + thread_cnt);
-		thread_cnt++;
+		pthread_mutex_destroy(mdata->forks + thread_index);
+		thread_index++;
 	}
 	return (SUCCESS);
 }
