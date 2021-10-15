@@ -29,7 +29,7 @@ typedef struct s_thread_data
 	pthread_t		thread_id;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*to_put_status;
+	pthread_mutex_t	*mutex;
 	char			*death_flag;
 }	t_thread_data;
 
@@ -42,7 +42,7 @@ typedef struct s_manage_data
 	long			time_tobe_satisfied;
 	t_thread_data	*threads;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t	to_put_status;
+	pthread_mutex_t	mutex;
 	char			death_flag;
 }	t_manage_data;
 
