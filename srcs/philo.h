@@ -10,30 +10,39 @@
 
 # define SUCCESS 0
 # define FAIL 1
+# define NO_ONE_DIED 0
+# define SOME_ONE_DIED 1
+
+# define EAT "eating"
+# define SLEEP "sleeping"
+# define THINK "thinking"
+# define DIE "died"
 
 typedef struct s_thread_data
 {
-	pthread_t		thread_id;
 	int				order;
-	pthread_mutex_t	*right_fork;
-	pthread_mutex_t	*left_fork;
 	long			time_to_die;
 	long			time_to_eat;
 	long			time_to_sleep;
-	long			time_last_eat;
 	long			time_tobe_satisfied;
+	long			time_last_eat;
+	pthread_t		thread_id;
+	pthread_mutex_t	*right_fork;
+	pthread_mutex_t	*left_fork;
+	pthread_mutex_t	*to_put_status;
 	char			*death_flag;
 }	t_thread_data;
 
 typedef struct s_manage_data
 {
-	t_thread_data	*threads;
-	pthread_mutex_t	*forks;
 	int				number_of_philosophers;
 	long			time_to_die;
 	long			time_to_eat;
 	long			time_to_sleep;
 	long			time_tobe_satisfied;
+	t_thread_data	*threads;
+	pthread_mutex_t	*forks;
+	pthread_mutex_t	to_put_status;
 	char			death_flag;
 }	t_manage_data;
 

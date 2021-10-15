@@ -117,7 +117,7 @@ void	put_thread_data(t_thread_data *tdata)
 	printf("death_flag           %d\n", *(tdata->death_flag));
 }
 
-char	set_manage_data_time(char **argv, t_manage_data *mdata)
+char	set_manage_data_options(char **argv, t_manage_data *mdata)
 {
 	bool	nonnum_check;
 
@@ -146,7 +146,7 @@ char	set_manage_data_time(char **argv, t_manage_data *mdata)
 
 char	set_manage_data(char **argv, t_manage_data *mdata)
 {
-	if (set_manage_data_time(argv, mdata) == FAIL)
+	if (set_manage_data_options(argv, mdata) == FAIL)
 		return (FAIL);
 	mdata->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->number_of_philosophers);
 	if (!mdata->forks)
@@ -168,18 +168,20 @@ char	set_thread_data(t_manage_data *mdata)
 	{
 		thread = mdata->threads + thread_index;
 		thread->order = thread_index + 1;
+		thread->time_to_die = mdata->time_to_die;
+		thread->time_to_eat = mdata->time_to_eat;
+		thread->time_to_sleep = mdata->time_to_sleep;
+		thread->time_tobe_satisfied = mdata->time_tobe_satisfied;
 		if (thread_index == 0)
 			thread->right_fork = mdata->forks + (mdata->number_of_philosophers - 1);
 		else
 			thread->right_fork = mdata->forks + (thread_index - 1);
 		thread->left_fork = mdata->forks + thread_index;
-		thread->time_to_die = mdata->time_to_die;
-		thread->time_to_eat = mdata->time_to_eat;
-		thread->time_to_sleep = mdata->time_to_sleep;
-		thread->time_tobe_satisfied = mdata->time_tobe_satisfied;
+		thread->to_put_status = &(mdata->to_put_status);
 		thread->death_flag = &(mdata->death_flag);
 		pthread_mutex_init(mdata->forks + thread_index, NULL);
 	}
+	pthread_mutex_init(&(mdata->to_put_status), NULL);
 	return (SUCCESS);
 }
 
@@ -195,10 +197,29 @@ long	gettimeofday_milisecond()
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-void	philo_eating(t_thread_data *tdata)
+void	put_status(t_thread_data *tdata, char *status)
 {
-	printf("%ld %d is eating\n", gettimeofday_milisecond(), tdata->order);
+	pthread_mutex_lock(tdata->to_put_status);
+	if (*(tdata->death_flag) == NO_ONE_DIED)
+		printf("%ld %d is %s\n", gettimeofday_milisecond(), tdata->order, status);
+	pthread_mutex_unlock(tdata->to_put_status);
+}
+
+void	philo_eat(t_thread_data *tdata)
+{
+	put_status(tdata, EAT);
 	usleep(tdata->time_to_eat * 1000);//最初からusにしとく？
+}
+
+void	philo_sleep(t_thread_data *tdata)
+{
+	put_status(tdata, SLEEP);
+	usleep(tdata->time_to_sleep * 1000);
+}
+
+void	philo_think(t_thread_data *tdata)
+{
+	put_status(tdata, THINK);
 }
 
 void	*philosopher(void *data)
@@ -208,13 +229,18 @@ void	*philosopher(void *data)
 	tdata = (t_thread_data *)data;
 	if (tdata->order % 2 == 1)
 		usleep(200);
-	pthread_mutex_lock(tdata->right_fork);
-	pthread_mutex_lock(tdata->left_fork);
-	philo_eating(tdata);
-	pthread_mutex_unlock(tdata->right_fork);
-	pthread_mutex_unlock(tdata->left_fork);
-	// philo_sleeping();
-	// philo_thinking();
+	while (*(tdata->death_flag) == NO_ONE_DIED)
+	{
+		pthread_mutex_lock(tdata->right_fork);
+		pthread_mutex_lock(tdata->left_fork);
+		philo_eat(tdata);
+		pthread_mutex_unlock(tdata->right_fork);
+		pthread_mutex_unlock(tdata->left_fork);
+		philo_sleep(tdata);
+		philo_think(tdata);
+		if (tdata->order == 1)
+			*(tdata->death_flag) = SOME_ONE_DIED;
+	}
 	return (data);
 }
 
