@@ -197,22 +197,25 @@ long	gettimeofday_milisecond()
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-void	survival_confirmation(t_thread_data *tdata)
-{
-	pthread_mutex_lock(tdata->mutex);
-	if (gettimeofday_milisecond() - tdata->time_last_eat >= 10)
-	{
-		*(tdata->death_flag) = SOME_ONE_DIED;
-		printf("some one died\n");
-	}
-	pthread_mutex_unlock(tdata->mutex);
-}
+// void	survival_confirmation(t_thread_data *tdata)
+// {
+// 	pthread_mutex_lock(tdata->mutex);
+// 	if (gettimeofday_milisecond() - tdata->time_last_eat >= 10)
+// 	{
+// 		*(tdata->death_flag) = SOME_ONE_DIED;
+// 		printf("some one died\n");
+// 	}
+// 	pthread_mutex_unlock(tdata->mutex);
+// }
 
 void	put_status(t_thread_data *tdata, char *message)
 {
-	survival_confirmation(tdata);
+	pthread_mutex_lock(tdata->mutex);
 	if (*(tdata->death_flag) == NO_ONE_DIED)
 		printf("%ld %d is %s\n", gettimeofday_milisecond(), tdata->order, message);
+	if (message[0] == DIE[0])
+		*(tdata->death_flag) = SOME_ONE_DIED;
+	pthread_mutex_unlock(tdata->mutex);
 }
 
 void	philo_eat(t_thread_data *tdata)
@@ -235,7 +238,6 @@ void	philo_think(t_thread_data *tdata)
 void	philo_die(t_thread_data *tdata)
 {
 	put_status(tdata, DIE);
-	*(tdata->death_flag) = SOME_ONE_DIED;
 }
 
 void	*philosopher(void *data)
@@ -254,6 +256,8 @@ void	*philosopher(void *data)
 		pthread_mutex_unlock(tdata->left_fork);
 		philo_sleep(tdata);
 		philo_think(tdata);
+		if (tdata->order == 1)
+			philo_die(tdata);
 	}
 	return (data);
 }
