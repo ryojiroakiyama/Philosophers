@@ -1,5 +1,26 @@
 #include "philo.h"
 
+void	put_manage_data(t_manage_data *mdata)
+{
+	printf("manage_data:\n");
+	printf("number_of_philosophers %d\n", mdata->number_of_philosophers);
+	printf("time_to_die            %ld\n", mdata->time_to_die);
+	printf("time_to_eat            %ld\n", mdata->time_to_eat);
+	printf("time_to_sleep          %ld\n", mdata->time_to_sleep);
+	printf("time_tobe_satisfied    %ld\n", mdata->time_tobe_satisfied);
+}
+
+void	put_thread_data(t_thread_data *tdata)
+{
+	printf("thread_data:\n");
+	printf("order                  %d\n", tdata->order);
+	printf("time_to_die            %ld\n", tdata->time_to_die);
+	printf("time_to_eat            %ld\n", tdata->time_to_eat);
+	printf("time_to_sleep          %ld\n", tdata->time_to_sleep);
+	printf("time_last_eat          %ld\n", tdata->time_last_eat);
+	printf("time_tobe_satisfied    %ld\n", tdata->time_tobe_satisfied);
+	printf("death_flag           %d\n", *(tdata->death_flag));
+}
 
 static bool	is_overflow(unsigned long num, \
 		int sign, bool *nonnum_check, long max)
@@ -95,28 +116,6 @@ char	put_arg_error(char *message)
 	return (FAIL);
 }
 
-void	put_manage_data(t_manage_data *mdata)
-{
-	printf("manage_data:\n");
-	printf("number_of_philosophers %d\n", mdata->number_of_philosophers);
-	printf("time_to_die            %ld\n", mdata->time_to_die);
-	printf("time_to_eat            %ld\n", mdata->time_to_eat);
-	printf("time_to_sleep          %ld\n", mdata->time_to_sleep);
-	printf("time_tobe_satisfied    %ld\n", mdata->time_tobe_satisfied);
-}
-
-void	put_thread_data(t_thread_data *tdata)
-{
-	printf("thread_data:\n");
-	printf("order                  %d\n", tdata->order);
-	printf("time_to_die            %ld\n", tdata->time_to_die);
-	printf("time_to_eat            %ld\n", tdata->time_to_eat);
-	printf("time_to_sleep          %ld\n", tdata->time_to_sleep);
-	printf("time_last_eat          %ld\n", tdata->time_last_eat);
-	printf("time_tobe_satisfied    %ld\n", tdata->time_tobe_satisfied);
-	printf("death_flag           %d\n", *(tdata->death_flag));
-}
-
 char	set_manage_data_options(char **argv, t_manage_data *mdata)
 {
 	bool	nonnum_check;
@@ -203,61 +202,39 @@ void	survival_confirmation(t_thread_data *tdata)
 		*(tdata->death_flag) = SOME_ONE_DIED;
 }
 
-char	put_status(t_thread_data *tdata, char *message)//ミューテックスロック内でフラグをいじらないと、フラグをいじる前後でput_statusしてしまう可能性がある
+void	put_status(t_thread_data *tdata, char *color, char *message)
 {
 	pthread_mutex_lock(tdata->mutex);
 	if (*(tdata->death_flag) == NO_ONE_DIED)
 	{
 		survival_confirmation(tdata);
 		if (*(tdata->death_flag) == NO_ONE_DIED)
-			printf("%ld %d is %s\n", gettimeofday_milisecond(), tdata->order, message);
+			printf("%s%ld %d is %s\n%s", color, gettimeofday_milisecond(), tdata->order, message, RESET);
 		else
 			printf("%s%ld %d is %s\n%s",RED, gettimeofday_milisecond(), tdata->order, DIE, RESET);
 	}
 	pthread_mutex_unlock(tdata->mutex);
-	if (*(tdata->death_flag) == NO_ONE_DIED)
-		return (NO_ONE_DIED);
-	else
-		return (SOME_ONE_DIED);
 }
-
-// void	survival_confirmation(t_thread_data *tdata)
-// {
-// 	pthread_mutex_lock(tdata->mutex);
-// 	if (gettimeofday_milisecond() - tdata->time_last_eat > tdata->time_to_die)
-// 	{
-// 		*(tdata->death_flag) = SOME_ONE_DIED;
-// 		put_status(tdata, DIE);
-// 	}
-// 	pthread_mutex_unlock(tdata->mutex);
-// }
 
 void	philo_eat(t_thread_data *tdata)
 {
 	tdata->time_last_eat = gettimeofday_milisecond();
-	if (put_status(tdata, EAT) == NO_ONE_DIED)
-		usleep(tdata->time_to_eat * 1000);//最初からusにしとく？
+	put_status(tdata, GREEN, EAT);
+	if (*(tdata->death_flag) == NO_ONE_DIED)
+		usleep(tdata->time_to_eat * 1000);
 }
 
 void	philo_sleep(t_thread_data *tdata)
 {
-	if (put_status(tdata, SLEEP) == NO_ONE_DIED)
+	put_status(tdata, CYAN, SLEEP);
+	if (*(tdata->death_flag) == NO_ONE_DIED)
 		usleep(tdata->time_to_sleep * 1000);
 }
 
 void	philo_think(t_thread_data *tdata)
 {
-	put_status(tdata, THINK);
+	put_status(tdata, MAGENTA, THINK);
 }
-
-// void	philo_die(t_thread_data *tdata)
-// {
-// 	survival_confirmation(tdata);
-// 	if (tdata->death_flag == NO_ONE_DIED)
-// 	{
-// 		put_status(tdata, DIE);
-// 	}
-// }
 
 void	*philosopher(void *data)
 {
@@ -265,7 +242,7 @@ void	*philosopher(void *data)
 
 	tdata = (t_thread_data *)data;
 	if (tdata->order % 2 == 1)
-		usleep(200);
+		usleep(200);//check error?
 	while (*(tdata->death_flag) == NO_ONE_DIED)
 	{
 		pthread_mutex_lock(tdata->right_fork);
@@ -285,7 +262,7 @@ char	run_thread(t_manage_data *mdata)
 	int				thread_index;
 	long			time_start;
 
-	time_start = gettimeofday_milisecond();
+	time_start = gettimeofday_milisecond();//check error?
 	if (time_start < 0)
 		return (FAIL);
 	thread_index = mdata->number_of_philosophers;
