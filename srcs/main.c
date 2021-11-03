@@ -10,16 +10,16 @@ void	put_manage_data(t_manage_data *mdata)
 	printf("time_tobe_satisfied    %ld\n", mdata->time_tobe_satisfied);
 }
 
-void	put_thread_data(t_thread_data *tdata)
+void	put_philo_data(t_philo_data *pdata)
 {
-	printf("thread_data:\n");
-	printf("order                  %d\n", tdata->order);
-	printf("time_to_die            %ld\n", tdata->time_to_die);
-	printf("time_to_eat            %ld\n", tdata->time_to_eat);
-	printf("time_to_sleep          %ld\n", tdata->time_to_sleep);
-	printf("time_last_eat          %ld\n", tdata->time_last_eat);
-	printf("time_tobe_satisfied    %ld\n", tdata->time_tobe_satisfied);
-	printf("death_flag           %d\n", *(tdata->death_flag));
+	printf("philo_data:\n");
+	printf("order                  %d\n", pdata->order);
+	printf("time_to_die            %ld\n", pdata->time_to_die);
+	printf("time_to_eat            %ld\n", pdata->time_to_eat);
+	printf("time_to_sleep          %ld\n", pdata->time_to_sleep);
+	printf("time_last_eat          %ld\n", pdata->time_last_eat);
+	printf("time_tobe_satisfied    %ld\n", pdata->time_tobe_satisfied);
+	printf("death_flag           %d\n", *(pdata->death_flag));
 }
 
 static bool	is_overflow(unsigned long num, \
@@ -150,22 +150,22 @@ char	set_manage_data(char **argv, t_manage_data *mdata)
 	mdata->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->number_of_philosophers);
 	if (!mdata->forks)
 		return (put_error("malloc for forks"));
-	mdata->threads = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->number_of_philosophers);
-	if (!mdata->threads)
+	mdata->philos = (t_philo_data *)malloc(sizeof(t_philo_data) * mdata->number_of_philosophers);
+	if (!mdata->philos)
 		return (put_error("malloc for threads"));
 	mdata->death_flag = 0;
 	return (SUCCESS);
 }
 
-char	set_thread_data(t_manage_data *mdata)
+char	set_philo_data(t_manage_data *mdata)
 {
-	t_thread_data	*thread;
+	t_philo_data	*thread;
 	int				thread_index;
 
 	thread_index = mdata->number_of_philosophers;
 	while (thread_index--)
 	{
-		thread = mdata->threads + thread_index;
+		thread = mdata->philos + thread_index;
 		thread->order = thread_index + 1;
 		thread->time_to_die = mdata->time_to_die;
 		thread->time_to_eat = mdata->time_to_eat;
@@ -196,69 +196,72 @@ long	gettimeofday_milisecond()
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-void	survival_confirmation(t_thread_data *tdata)
+void	survival_confirmation(t_philo_data *pdata)
 {
-	if (gettimeofday_milisecond() - tdata->time_last_eat > tdata->time_to_die)
-		*(tdata->death_flag) = SOME_ONE_DIED;
+	if (gettimeofday_milisecond() - pdata->time_last_eat > pdata->time_to_die)
+		*(pdata->death_flag) = SOME_ONE_DIED;
 }
 
-void	put_status(t_thread_data *tdata, char *color, char *message)
+void	put_status(t_philo_data *pdata, char *color, char *message)
 {
-	pthread_mutex_lock(tdata->mutex);
-	if (*(tdata->death_flag) == NO_ONE_DIED)
+	pthread_mutex_lock(pdata->mutex);
+	if (*(pdata->death_flag) == NO_ONE_DIED)
 	{
-		survival_confirmation(tdata);
-		if (*(tdata->death_flag) == NO_ONE_DIED)
-			printf("%s%ld %d is %s\n%s", color, gettimeofday_milisecond(), tdata->order, message, RESET);
+		survival_confirmation(pdata);
+		if (*(pdata->death_flag) == NO_ONE_DIED)
+			printf("%s%ld %d is %s\n%s", color, gettimeofday_milisecond(), pdata->order, message, RESET);
 		else
-			printf("%s%ld %d is %s\n%s",RED, gettimeofday_milisecond(), tdata->order, DIE, RESET);
+			printf("%s%ld %d is %s\n%s",RED, gettimeofday_milisecond(), pdata->order, DIE, RESET);
 	}
-	pthread_mutex_unlock(tdata->mutex);
+	pthread_mutex_unlock(pdata->mutex);
 }
 
-void	philo_eat(t_thread_data *tdata)
+void	philo_eat(t_philo_data *pdata)
 {
-	tdata->time_last_eat = gettimeofday_milisecond();
-	put_status(tdata, GREEN, EAT);
-	if (*(tdata->death_flag) == NO_ONE_DIED)
-		usleep(tdata->time_to_eat * 1000);
+	pdata->time_last_eat = gettimeofday_milisecond();
+	put_status(pdata, GREEN, EAT);
+	if (*(pdata->death_flag) == NO_ONE_DIED)
+		usleep(pdata->time_to_eat * 1000);
 }
 
-void	philo_sleep(t_thread_data *tdata)
+void	philo_sleep(t_philo_data *pdata)
 {
-	put_status(tdata, CYAN, SLEEP);
-	if (*(tdata->death_flag) == NO_ONE_DIED)
-		usleep(tdata->time_to_sleep * 1000);
+	put_status(pdata, CYAN, SLEEP);
+	if (*(pdata->death_flag) == NO_ONE_DIED)
+		usleep(pdata->time_to_sleep * 1000);
 }
 
-void	philo_think(t_thread_data *tdata)
+void	philo_think(t_philo_data *pdata)
 {
-	put_status(tdata, MAGENTA, THINK);
+	put_status(pdata, MAGENTA, THINK);
 }
 
 void	*philosopher(void *data)
 {
-	t_thread_data	*tdata;
+	t_philo_data	*pdata;
+	t_monitor_data	monidata;
 
-	tdata = (t_thread_data *)data;
-	if (tdata->order % 2 == 1)
+	//pthread_create(&(thread->thread_id), NULL, &philosopher, thread);
+	pdata = (t_philo_data *)data;
+	if (pdata->order % 2 == 1)
 		usleep(200);//check error?
-	while (*(tdata->death_flag) == NO_ONE_DIED)
+	while (*(pdata->death_flag) == NO_ONE_DIED)
 	{
-		pthread_mutex_lock(tdata->right_fork);
-		pthread_mutex_lock(tdata->left_fork);
-		philo_eat(tdata);
-		pthread_mutex_unlock(tdata->right_fork);
-		pthread_mutex_unlock(tdata->left_fork);
-		philo_sleep(tdata);
-		philo_think(tdata);
+		pthread_mutex_lock(pdata->right_fork);
+		pthread_mutex_lock(pdata->left_fork);
+		philo_eat(pdata);
+		pthread_mutex_unlock(pdata->right_fork);
+		pthread_mutex_unlock(pdata->left_fork);
+		philo_sleep(pdata);
+		philo_think(pdata);
 	}
+	//pthread_join(thread->thread_id, NULL);
 	return (data);
 }
 
 char	run_thread(t_manage_data *mdata)
 {
-	t_thread_data	*thread;
+	t_philo_data	*thread;
 	int				thread_index;
 	long			time_start;
 
@@ -268,18 +271,17 @@ char	run_thread(t_manage_data *mdata)
 	thread_index = mdata->number_of_philosophers;
 	while (thread_index--)
 	{
-		thread = mdata->threads + thread_index;
+		thread = mdata->philos + thread_index;
 		thread->time_last_eat = time_start;
 		pthread_create(&(thread->thread_id), NULL, &philosopher, thread);
 	}
-	thread_index++;
-	while (thread_index < mdata->number_of_philosophers)
+	while (++thread_index < mdata->number_of_philosophers)
 	{
-		thread = mdata->threads + thread_index;
+		thread = mdata->philos + thread_index;
 		pthread_join(thread->thread_id, NULL);
 		pthread_mutex_destroy(mdata->forks + thread_index);
-		thread_index++;
 	}
+	pthread_mutex_destroy(&(mdata->mutex));
 	return (SUCCESS);
 }
 
@@ -291,14 +293,14 @@ int	main(int argc, char **argv)
 	if (!(5 <= argc && argc <= 6))
 		return (put_arg_error("number of argument"));
 	mdata.forks = NULL;
-	mdata.threads = NULL;
+	mdata.philos = NULL;
 	if (set_manage_data(argv, &mdata) == SUCCESS && \
-		set_thread_data(&mdata) == SUCCESS && \
+		set_philo_data(&mdata) == SUCCESS && \
 		run_thread(&mdata) == SUCCESS)
 			return_status = SUCCESS;
 	else
 		return_status = FAIL;
-	free(mdata.threads);
+	free(mdata.philos);
 	free(mdata.forks);
 	// if (system("leaks a.out >/dev/null"))
 	// 	system("leaks a.out");
