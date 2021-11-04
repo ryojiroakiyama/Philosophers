@@ -176,11 +176,14 @@ char	set_philo_data(t_manage_data *mdata)
 		else
 			thread->right_fork = mdata->forks + (thread_index - 1);
 		thread->left_fork = mdata->forks + thread_index;
-		thread->mutex = &(mdata->mutex);
+		thread->put_mutex = &(mdata->put_mutex);
+		pthread_mutex_init(&(thread->last_eat_mutex), NULL);
+		thread->death_mutex = &(mdata->death_mutex);
 		thread->death_flag = &(mdata->death_flag);
 		pthread_mutex_init(mdata->forks + thread_index, NULL);
 	}
-	pthread_mutex_init(&(mdata->mutex), NULL);
+	pthread_mutex_init(&(mdata->put_mutex), NULL);
+	pthread_mutex_init(&(mdata->death_mutex), NULL);
 	return (SUCCESS);
 }
 
@@ -196,24 +199,66 @@ long	gettimeofday_milisecond()
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-void	survival_confirmation(t_philo_data *pdata)
+// void	survival_confirmation(t_philo_data *pdata)
+// {
+// 	if (gettimeofday_milisecond() - pdata->time_last_eat > pdata->time_to_die)
+// 		*(pdata->death_flag) = SOME_ONE_DIED;
+// }
+
+// void	put_status(t_philo_data *pdata, char *color, char *message)
+// {
+// 	pthread_mutex_lock(pdata->put_mutex);
+// 	if (*(pdata->death_flag) == NO_ONE_DIED)
+// 	{
+// 		survival_confirmation(pdata);
+// 		if (*(pdata->death_flag) == NO_ONE_DIED)
+// 			printf("%s%ld %d is %s\n%s", color, gettimeofday_milisecond(), pdata->order, message, RESET);
+// 		else
+// 			printf("%s%ld %d is %s\n%s",RED, gettimeofday_milisecond(), pdata->order, DIE, RESET);
+// 	}
+// 	pthread_mutex_unlock(pdata->put_mutex);
+// }
+
+char	access_death_flag(char *death_flag, t_access mode, pthread_mutex_t *mutex)
 {
-	if (gettimeofday_milisecond() - pdata->time_last_eat > pdata->time_to_die)
-		*(pdata->death_flag) = SOME_ONE_DIED;
+	char	result;
+
+	pthread_mutex_lock(mutex);
+	if (mode == READ)
+		result = *death_flag;
+	else if (mode == EDIT)
+		*death_flag = SOME_ONE_DIED;
+	pthread_mutex_unlock(mutex);
+	return (result);
+}
+
+
+long	access_time_last_eat(long *time_last_eat, t_access mode, pthread_mutex_t *mutex)
+{
+	long	result;
+
+	pthread_mutex_lock(mutex);
+	if (mode == READ)
+		result = *time_last_eat;
+	else if (mode == EDIT)
+		*time_last_eat = gettimeofday_milisecond();
+	pthread_mutex_unlock(mutex);
+	return (result);
 }
 
 void	put_status(t_philo_data *pdata, char *color, char *message)
 {
-	pthread_mutex_lock(pdata->mutex);
+	static char someone_died;
+
+	pthread_mutex_lock(pdata->put_mutex);
 	if (*(pdata->death_flag) == NO_ONE_DIED)
-	{
-		survival_confirmation(pdata);
-		if (*(pdata->death_flag) == NO_ONE_DIED)
 			printf("%s%ld %d is %s\n%s", color, gettimeofday_milisecond(), pdata->order, message, RESET);
-		else
-			printf("%s%ld %d is %s\n%s",RED, gettimeofday_milisecond(), pdata->order, DIE, RESET);
+	else if (someone_died == 0)
+	{
+		printf("%s%ld %d is %s\n%s",RED, gettimeofday_milisecond(), pdata->order, DIE, RESET);
+		someone_died = 1;
 	}
-	pthread_mutex_unlock(pdata->mutex);
+	pthread_mutex_unlock(pdata->put_mutex);
 }
 
 void	philo_eat(t_philo_data *pdata)
@@ -236,13 +281,36 @@ void	philo_think(t_philo_data *pdata)
 	put_status(pdata, MAGENTA, THINK);
 }
 
+void	*monitor(void *data)
+{
+	t_monitor_data	*monidata;
+	long			
+
+	monidata = (t_monitor_data *)data;
+	while (1)
+	{
+		if (gettimeofday_milisecond() - monidata->time_last_eat > monidata->time_to_die)
+		{
+			*(monidata->death_flag) = SOME_ONE_DIED;
+			break ;
+		}
+		usleep(10000);
+	}
+}
+
 void	*philosopher(void *data)
 {
 	t_philo_data	*pdata;
 	t_monitor_data	monidata;
 
-	//pthread_create(&(thread->thread_id), NULL, &philosopher, thread);
 	pdata = (t_philo_data *)data;
+	monidata.time_to_die = pdata->time_to_die;
+	monidata.time_tobe_satisfied = pdata->time_tobe_satisfied;
+	monidata.time_last_eat = &(pdata->time_last_eat);
+	monidata.last_eat_mutex = &(pdata->last_eat_mutex);
+	monidata.death_mutex = pdata->death_mutex;
+	monidata.death_flag = pdata->death_flag;
+	//pthread_create(&(thread->thread_id), NULL, &philosopher, thread);
 	if (pdata->order % 2 == 1)
 		usleep(200);//check error?
 	while (*(pdata->death_flag) == NO_ONE_DIED)
@@ -279,9 +347,11 @@ char	run_thread(t_manage_data *mdata)
 	{
 		thread = mdata->philos + thread_index;
 		pthread_join(thread->thread_id, NULL);
+		pthread_mutex_destroy(&(thread->last_eat_mutex));
 		pthread_mutex_destroy(mdata->forks + thread_index);
 	}
-	pthread_mutex_destroy(&(mdata->mutex));
+	pthread_mutex_destroy(&(mdata->put_mutex));
+	pthread_mutex_destroy(&(mdata->death_mutex));
 	return (SUCCESS);
 }
 

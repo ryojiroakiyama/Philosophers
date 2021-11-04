@@ -29,6 +29,23 @@
 # define MAGENTA "\033[35m"
 # define RESET "\033[0m"
 
+typedef enum e_access
+{
+	READ,
+	EDIT
+}	t_access;
+
+typedef struct s_monitor_data
+{
+	long			time_to_die;
+	long			time_tobe_satisfied;
+	long			*time_last_eat;
+	pthread_t		thread_id;
+	pthread_mutex_t	*last_eat_mutex;
+	pthread_mutex_t	*death_mutex;
+	char			*death_flag;
+}	t_monitor_data;
+
 typedef struct s_philo_data
 {
 	int				order;
@@ -40,21 +57,11 @@ typedef struct s_philo_data
 	pthread_t		thread_id;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*mutex;
+	pthread_mutex_t	*put_mutex;
+	pthread_mutex_t	last_eat_mutex;
+	pthread_mutex_t	*death_mutex;
 	char			*death_flag;
 }	t_philo_data;
-
-typedef struct s_monitor_data
-{
-	long			time_to_die;
-	long			time_to_eat;
-	long			time_to_sleep;
-	long			time_tobe_satisfied;
-	long			time_last_eat;
-	pthread_t		thread_id;
-	pthread_mutex_t	*mutex;
-	char			*death_flag;
-}	t_monitor_data;
 
 typedef struct s_manage_data
 {
@@ -65,7 +72,8 @@ typedef struct s_manage_data
 	long			time_tobe_satisfied;
 	t_philo_data	*philos;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t	mutex;
+	pthread_mutex_t	put_mutex;
+	pthread_mutex_t	death_mutex;
 	char			death_flag;
 }	t_manage_data;
 
