@@ -21,6 +21,7 @@
 # define SLEEP "sleeping"
 # define THINK "thinking"
 # define DIE "died"
+# define STUFFED "is stuffed"
 
 // color settings
 # define RED "\033[31m"
@@ -64,6 +65,7 @@ typedef enum e_time
 	TO_SLEEP,
 	BE_STUFFED,
 	LAST_EAT,
+	SUM_EAT,
 	TIME_NUM
 }	t_time;
 
