@@ -140,7 +140,7 @@ static char	set_manage_data_options(t_manage_data *mdata, char **argv)
 			return (put_arg_error(argv[5]));
 	}
 	else
-		mdata->time[BE_STUFFED] = -1;
+		mdata->time[BE_STUFFED] = LONG_MAX;
 	return (SUCCESS);
 }
 
@@ -172,6 +172,7 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, in
 	philo->time[TO_SLEEP] = mdata->time[TO_SLEEP];
 	philo->time[BE_STUFFED] = mdata->time[BE_STUFFED];
 	philo->time[LAST_EAT] = 0;
+	philo->time[SUM_EAT] = 0;
 	if (philo_index == 0)
 		philo->mutex[RIGHT_FORK] = mdata->forks + (mdata->number_of_philosophers - 1);
 	else
@@ -193,6 +194,7 @@ static void	set_thread_data_monitor(t_thread_data *philo, t_thread_data *monitor
 	monitor->time[TO_SLEEP] = philo->time[TO_SLEEP];
 	monitor->time[BE_STUFFED] = philo->time[BE_STUFFED];
 	monitor->time[LAST_EAT] = 0;
+	monitor->time[SUM_EAT] = 0;
 	monitor->mutex[RIGHT_FORK] = NULL;
 	monitor->mutex[LEFT_FORK] = NULL;
 	monitor->mutex[TO_PUT] = philo->mutex[TO_PUT];
@@ -282,6 +284,12 @@ char	philo_eat(t_thread_data *philo)
 	if (put_status(philo, GREEN, EAT, 0) == SUCCESS)
 	{
 		usleep(philo->time[TO_EAT] * 1000);
+		philo->time[SUM_EAT] += philo->time[TO_EAT];
+		if (philo->time[SUM_EAT] >= philo->time[BE_STUFFED])
+		{
+			put_status(philo, MAGENTA, STUFFED, 0);
+			return (FAIL);
+		}
 		return (SUCCESS);
 	}
 	else
@@ -290,7 +298,7 @@ char	philo_eat(t_thread_data *philo)
 
 char	philo_sleep(t_thread_data *philo)
 {
-	if (put_status(philo, CYAN, SLEEP, 0) == SUCCESS)
+	if (put_status(philo, BLUE, SLEEP, 0) == SUCCESS)
 	{
 		usleep(philo->time[TO_SLEEP] * 1000);
 		return (SUCCESS);
@@ -301,7 +309,7 @@ char	philo_sleep(t_thread_data *philo)
 
 char	philo_think(t_thread_data *philo)
 {
-	if (put_status(philo, MAGENTA, THINK, 0) == SUCCESS)
+	if (put_status(philo, CYAN, THINK, 0) == SUCCESS)
 		return (SUCCESS);
 	else
 		return (FAIL);
@@ -310,8 +318,8 @@ char	philo_think(t_thread_data *philo)
 void	*monitor_action(void *data)
 {
 	t_thread_data	*monitor;
-	long			time_now;
 	long			time_last_eat;
+	long			time_now;
 
 	monitor = (t_thread_data *)data;
 	while (1)
@@ -347,8 +355,10 @@ void	*philo_action(void *data)
 		status = philo_eat(philo);
 		pthread_mutex_unlock(philo->mutex[RIGHT_FORK]);
 		pthread_mutex_unlock(philo->mutex[LEFT_FORK]);
-		status =  philo_sleep(philo);
-		status = philo_think(philo);
+		if (status == SUCCESS)// necessary to end by philo be stuffed.
+			status =  philo_sleep(philo);
+		if (status == SUCCESS)
+			status = philo_think(philo);
 	}
 	pthread_join(minimoni->thread_id, NULL);
 	return (data);
