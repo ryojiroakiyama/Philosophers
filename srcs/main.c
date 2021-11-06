@@ -171,16 +171,17 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, in
 	philo->time[TO_EAT] = mdata->time[TO_EAT];
 	philo->time[TO_SLEEP] = mdata->time[TO_SLEEP];
 	philo->time[BE_STUFFED] = mdata->time[BE_STUFFED];
-	philo->time_last_eat = &(philo->time[LAST_EAT]);
-	philo->death_flag = &(mdata->death_flag);
+	philo->time[LAST_EAT] = 0;
 	if (philo_index == 0)
 		philo->mutex[RIGHT_FORK] = mdata->forks + (mdata->number_of_philosophers - 1);
 	else
 		philo->mutex[RIGHT_FORK] = mdata->forks + (philo_index - 1);
 	philo->mutex[LEFT_FORK] = mdata->forks + philo_index;
-	philo->mutex[PUT] = &(mdata->put);
-	philo->mutex[MEAL] = mdata->last_eat + philo_index;
-	philo->mutex[DEATH] = &(mdata->death);
+	philo->mutex[TO_PUT] = &(mdata->put);
+	philo->mutex[TO_LAST_EAT] = mdata->last_eat + philo_index;
+	philo->mutex[TO_DEATH_FLAG] = &(mdata->death);
+	philo->time_last_eat = &(philo->time[LAST_EAT]);
+	philo->death_flag = &(mdata->death_flag);
 	philo->monitor = mdata->monitors + philo_index;
 }
 
@@ -191,13 +192,14 @@ static void	set_thread_data_monitor(t_thread_data *philo, t_thread_data *monitor
 	monitor->time[TO_EAT] = philo->time[TO_EAT];
 	monitor->time[TO_SLEEP] = philo->time[TO_SLEEP];
 	monitor->time[BE_STUFFED] = philo->time[BE_STUFFED];
-	monitor->time_last_eat = philo->time_last_eat;
-	monitor->death_flag = philo->death_flag;
+	monitor->time[LAST_EAT] = 0;
 	monitor->mutex[RIGHT_FORK] = NULL;
 	monitor->mutex[LEFT_FORK] = NULL;
-	monitor->mutex[PUT] = philo->mutex[PUT];
-	monitor->mutex[MEAL] = philo->mutex[MEAL];
-	monitor->mutex[DEATH] = philo->mutex[DEATH];
+	monitor->mutex[TO_PUT] = philo->mutex[TO_PUT];
+	monitor->mutex[TO_LAST_EAT] = philo->mutex[TO_LAST_EAT];
+	monitor->mutex[TO_DEATH_FLAG] = philo->mutex[TO_DEATH_FLAG];
+	monitor->time_last_eat = philo->time_last_eat;
+	monitor->death_flag = philo->death_flag;
 	monitor->monitor = NULL;
 }
 
@@ -236,11 +238,11 @@ char	access_death_flag(t_thread_data *thread, t_access mode)
 {
 	char	result;
 
-	pthread_mutex_lock(thread->mutex[DEATH]);
+	pthread_mutex_lock(thread->mutex[TO_DEATH_FLAG]);
 	if (mode == EDIT)
 		*(thread->death_flag) = SOME_ONE_DIED;
 	result = *(thread->death_flag);
-	pthread_mutex_unlock(thread->mutex[DEATH]);
+	pthread_mutex_unlock(thread->mutex[TO_DEATH_FLAG]);
 	return (result);
 }
 
@@ -248,29 +250,29 @@ long	access_time_last_eat(t_thread_data *thread, t_access mode)
 {
 	long	result;
 
-	pthread_mutex_lock(thread->mutex[MEAL]);
+	pthread_mutex_lock(thread->mutex[TO_LAST_EAT]);
 	if (mode == EDIT)
  		*(thread->time_last_eat) = gettimeofday_milisecond();
 	result = *(thread->time_last_eat);
-	pthread_mutex_unlock(thread->mutex[MEAL]);
+	pthread_mutex_unlock(thread->mutex[TO_LAST_EAT]);
 	return (result);
 }
 
-char	put_status(t_thread_data *thread, char *color, char *message, char death)
+char	put_status(t_thread_data *thread, char *color, char *message, char to_die)
 {
 	char	status;
 
-	pthread_mutex_lock(thread->mutex[PUT]);
+	pthread_mutex_lock(thread->mutex[TO_PUT]);
 	if (access_death_flag(thread, READ) == NO_ONE_DIED)
 	{
-		if (death)
+		if (to_die)
 			access_death_flag(thread, EDIT);
 		printf("%s%ld %d is %s\n%s", color, gettimeofday_milisecond(), thread->order, message, RESET);
 		status = SUCCESS;
 	}
 	else
 		status = FAIL;
-	pthread_mutex_unlock(thread->mutex[PUT]);
+	pthread_mutex_unlock(thread->mutex[TO_PUT]);
 	return (status);
 }
 
@@ -329,12 +331,12 @@ void	*monitor_action(void *data)
 void	*philo_action(void *data)
 {
 	t_thread_data	*philo;
-	t_thread_data	*monitor;
+	t_thread_data	*minimoni;
 	char			status;
 
 	philo = (t_thread_data *)data;
-	monitor = philo->monitor;
-	pthread_create(&(monitor->thread_id), NULL, &monitor_action, monitor);
+	minimoni = philo->monitor;
+	pthread_create(&(minimoni->thread_id), NULL, &monitor_action, minimoni);
 	if (philo->order % 2 == 1)
 		usleep(200);
 	status = SUCCESS;
@@ -348,7 +350,7 @@ void	*philo_action(void *data)
 		status =  philo_sleep(philo);
 		status = philo_think(philo);
 	}
-	pthread_join(monitor->thread_id, NULL);
+	pthread_join(minimoni->thread_id, NULL);
 	return (data);
 }
 
@@ -416,4 +418,4 @@ int	main(int argc, char **argv)
 	// if (system("leaks a.out >/dev/null"))
 	// 	system("leaks a.out");
 	return (return_status);
-}//error check of functions
+}
