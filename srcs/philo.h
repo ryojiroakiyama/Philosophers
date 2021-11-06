@@ -51,9 +51,9 @@ typedef enum e_mutex
 {
 	RIGHT_FORK,
 	LEFT_FORK,
-	PUT,
-	MEAL,
-	DEATH,
+	TO_PUT,
+	TO_LAST_EAT,
+	TO_DEATH_FLAG,
 	MUTEX_NUM
 }	t_mutex;
 
@@ -72,39 +72,35 @@ typedef struct s_thread_data
 	pthread_t				thread_id;
 	int						order;
 	long					time[TIME_NUM];
-	long					*time_last_eat;// = &time[LAST_EAT]
-	char					*death_flag;// = &mdata->death_flag
 	pthread_mutex_t			*mutex[MUTEX_NUM];
-	struct s_thread_data	*monitor;// monitor->time_last_eat = &time[LAST_EAT]
-	//								   monitor->death_flag = &mdata->death_flag
+	long					*time_last_eat;// = &time[LAST_EAT](it's member)
+	char					*death_flag;// = &mdata->death_flag
+	struct s_thread_data	*monitor;// monitor->time_last_eat = &time[LAST_EAT](philo's member)
+	//								    monitor->death_flag = &mdata->death_flag
 }	t_thread_data;
 
 /*
-** Members as pointer type
-** (Memory will be allocated for
-** sizeof(type) x (number of philosophers)).
-**   philos : philos[0] has data of first philosopher's thread.
-**   times_last_eat : times_last_eat[0] is shared by philos[0] <-> monitors[0].
-**   forks : forks[0] is shared by philos[0] <-> philos[1].
-**   last_eat : last_eat[0] is used to lock access to times_last_eat[0].
-**
-** Else members
-**   time : Values of arguments.
-**   death_flag : shared by all threads.
-**   put : put is used to lock use of put_status().
-**   death : death is used to lock access to death_flag.
+** Members
+**  philos : philos[i] has data of No.(i+1) philosopher(thread).
+**  monitors : monitors[i] has data of No.(i+1) philosopher's monitor(thread).
+**  forks : mutex for eating action. forks[i] is shared by philos[i] <-> philos[i+1].
+**  last_eat : mutex for access to time_last_eat(each thread's member)
+**             last_eat[i] is shared by philos[i] <-> monitors[i].
+**  put : mutex for use to put_status(). is shared by all threads.
+**  death : mutex. for access to death_flag. is shared by all threads.
+**  death_flag : flag indicate no one died or not. 
 */
 typedef struct s_manage_data
 {
 	int				number_of_philosophers;
 	long			time[TIME_NUM];
-	char			death_flag;
 	t_thread_data	*philos;
 	t_thread_data	*monitors;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*last_eat;
 	pthread_mutex_t	put;
 	pthread_mutex_t	death;
+	char			death_flag;
 }	t_manage_data;
 
 #endif
