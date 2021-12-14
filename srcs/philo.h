@@ -115,4 +115,20 @@ void	put_data(t_data *pdata);
 char	put_error(char *message);
 char	put_arg_error(char *message);
 
+// thread
+long	gettimeofday_milisecond();
+char	access_death_flag(t_data *thread, t_access mode);
+long	access_time_last_eat(t_data *thread, t_access mode);
+char	put_status(t_data *thread, char *color, char *message, char to_die);
+char	philo_eat(t_data *philo);
+char	philo_sleep(t_data *philo);
+char	philo_think(t_data *philo);
+void	*monitor_action(void *data);
+void	*philo_action(void *data);
+
+// main
+char	set_manage_data(t_manage_data *mdata, char **argv);
+char	set_data(t_manage_data *mdata);
+char	run_thread(t_manage_data *mdata);
+
 #endif
