@@ -1,122 +1,5 @@
 #include "philo.h"
 
-void	put_manage_data(t_manage_data *mdata)
-{
-	printf("manage_data:\n");
-	printf("number_of_philosophers %d\n", mdata->number_of_philosophers);
-	printf("time[TO_DIE]           %ld\n", mdata->time[TO_DIE]);
-	printf("time[TO_EAT]           %ld\n", mdata->time[TO_EAT]);
-	printf("time[TO_SLEEP]         %ld\n", mdata->time[TO_SLEEP]);
-	printf("time[BE_FULL]       %ld\n", mdata->time[BE_FULL]);
-}
-
-void	put_data(t_data *pdata)
-{
-	printf("philo_data:\n");
-	printf("order            %d\n", pdata->order);
-	printf("time[TO_DIE]     %ld\n", pdata->time[TO_DIE]);
-	printf("time[TO_EAT]     %ld\n", pdata->time[TO_EAT]);
-	printf("time[TO_SLEEP]   %ld\n", pdata->time[TO_SLEEP]);
-	printf("time[BE_FULL] %ld\n", pdata->time[BE_FULL]);
-	printf("time[LAST_EAT    %ld\n", pdata->time[LAST_EAT]);
-	printf("time_last_eat    %ld\n", *(pdata->time_last_eat));
-	printf("death_flag       %d\n", *(pdata->death_flag));
-}
-
-static bool	is_overflow(unsigned long num, \
-		int sign, bool *nonnum_check, long max)
-{
-	if (0 < num && \
-		((sign == 1 && (unsigned long)max < num) || \
-		(sign == -1 && (unsigned long)max < num - 1)))
-		return (true);
-	else if (*nonnum_check)
-		*nonnum_check = false;
-	return (false);
-}
-
-static size_t	pass_isspace(char *str, size_t i)
-{
-	while (str[i] == '\t' || str[i] == '\n' || str[i] == '\v'
-		|| str[i] == '\f' || str[i] == '\r' || str[i] == ' ')
-		i++;
-	return (i);
-}
-
-long	ft_atol(char *str, bool *nonnum_check)
-{
-	size_t			i;
-	unsigned long	num;
-	int				sign;
-
-	i = 0;
-	num = 0;
-	sign = 1;
-	i = pass_isspace(str, i);
-	if (str[i] == '+')
-		i++;
-	else if (str[i] == '-' && ++i)
-		sign = -1;
-	*nonnum_check = true;
-	while (str[i] && ('0' <= str[i] && str[i] <= '9'))
-	{
-		num = num * 10 + (str[i] - '0');
-		if (is_overflow(num, sign, nonnum_check, LONG_MAX))
-			break ;
-		i++;
-	}
-	i = pass_isspace(str, i);
-	if (i == 0 || str[i] != '\0')
-		*nonnum_check = true;
-	return ((long)num * sign);
-}
-
-int	ft_atoi(char *str, bool *nonnum_check)
-{
-	size_t			i;
-	unsigned int	num;
-	int				sign;
-
-	i = 0;
-	num = 0;
-	sign = 1;
-	i = pass_isspace(str, i);
-	if (str[i] == '+')
-		i++;
-	else if (str[i] == '-' && ++i)
-		sign = -1;
-	*nonnum_check = true;
-	while (str[i] && ('0' <= str[i] && str[i] <= '9'))
-	{
-		num = num * 10 + (str[i] - '0');
-		if (is_overflow(num, sign, nonnum_check, INT_MAX))
-			break ;
-		i++;
-	}
-	i = pass_isspace(str, i);
-	if (i == 0 || str[i] != '\0')
-		*nonnum_check = true;
-	return ((int)num * sign);
-}
-
-char	put_error(char *message)
-{
-	printf("error: %s\n", message);
-	return (FAIL);
-}
-
-char	put_arg_error(char *message)
-{
-	printf("error: %s\n", message);
-	printf("type and order of arguments required:\n");
-	printf("1: number_of_philosophers\n");
-	printf("2: time_to_die\n");
-	printf("3: time_to_eat\n");
-	printf("4: time_to_sleep\n");
-	printf("5: number_of_times_each_philosopher_must_eat (is optional)\n");
-	return (FAIL);
-}
-
 static char	set_manage_data_options(t_manage_data *mdata, char **argv)
 {
 	bool	nonnum_check;
@@ -416,7 +299,7 @@ int	main(int argc, char **argv)
 	char			return_status;
 
 	if (!(5 <= argc && argc <= 6))
-		return (put_arg_error("number of argument"));
+		return (put_arg_error("number of arguments"));
 	handle_memory(&mdata, INIT);
 	if (set_manage_data(&mdata, argv) == SUCCESS && \
 		set_data(&mdata) == SUCCESS && \

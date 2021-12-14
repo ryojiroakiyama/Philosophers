@@ -105,4 +105,14 @@ typedef struct s_manage_data
 	char			death_flag;
 }	t_manage_data;
 
+// lib.c
+long	ft_atol(char *str, bool *nonnum_check);
+int		ft_atoi(char *str, bool *nonnum_check);
+
+// put.c
+void	put_manage_data(t_manage_data *mdata);
+void	put_data(t_data *pdata);
+char	put_error(char *message);
+char	put_arg_error(char *message);
+
 #endif
