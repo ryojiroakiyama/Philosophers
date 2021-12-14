@@ -21,7 +21,7 @@
 # define SLEEP "sleeping"
 # define THINK "thinking"
 # define DIE "died"
-# define STUFFED "is stuffed"
+# define FULL "is full"
 
 // color settings
 # define RED "\033[31m"
@@ -63,41 +63,41 @@ typedef enum e_time
 	TO_DIE,
 	TO_EAT,
 	TO_SLEEP,
-	BE_STUFFED,
+	BE_FULL,
 	LAST_EAT,
 	SUM_EAT,
 	TIME_NUM
 }	t_time;
 
-typedef struct s_thread_data
+typedef struct s_data
 {
-	pthread_t				thread_id;
-	int						order;
-	long					time[TIME_NUM];
-	pthread_mutex_t			*mutex[MUTEX_NUM];
-	long					*time_last_eat;// = &time[LAST_EAT](it's member)
-	char					*death_flag;// = &mdata->death_flag
-	struct s_thread_data	*monitor;// monitor->time_last_eat = &time[LAST_EAT](philo's member)
-	//								    monitor->death_flag = &mdata->death_flag
-}	t_thread_data;
+	pthread_t		thread_id;
+	int				order;
+	long			time[TIME_NUM];
+	pthread_mutex_t	*mutex[MUTEX_NUM];
+	long			*time_last_eat;// = &time[LAST_EAT](it's member)
+	char			*death_flag;// = &mdata->death_flag
+	struct s_data	*monitor;/* monitor->time_last_eat = &time[LAST_EAT](philo's member)
+								monitor->death_flag = &mdata->death_flag */
+}	t_data;
 
 /*
 ** Members
-**  philos : philos[i] has data of No.(i+1) philosopher(thread).
-**  monitors : monitors[i] has data of No.(i+1) philosopher's monitor(thread).
-**  forks : mutex for eating action. forks[i] is shared by philos[i] <-> philos[i+1].
-**  last_eat : mutex for access to time_last_eat(each thread's member)
-**             last_eat[i] is shared by philos[i] <-> monitors[i].
-**  put : mutex for use to put_status(). is shared by all threads.
-**  death : mutex. for access to death_flag. is shared by all threads.
-**  death_flag : flag indicate no one died or not. 
+**  philos:		philos[i] has data of No.(i+1) philosopher(thread).
+**  monitors:	monitors[i] has data of No.(i+1) philosopher's monitor(thread).
+**  forks:		mutex for eating action. forks[i] is shared by philos[i] <-> philos[i+1].
+**  last_eat:	mutex for access to time_last_eat(each thread's member)
+**				last_eat[i] is shared by philos[i] <-> monitors[i].
+**  put:		mutex for use to put_status(). is shared by all threads.
+**  death:		mutex for access to death_flag. is shared by all threads.
+**  death_flag:	flag indicate no one died or not. 
 */
 typedef struct s_manage_data
 {
 	int				number_of_philosophers;
 	long			time[TIME_NUM];
-	t_thread_data	*philos;
-	t_thread_data	*monitors;
+	t_data			*philos;
+	t_data			*monitors;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*last_eat;
 	pthread_mutex_t	put;

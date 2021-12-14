@@ -7,17 +7,17 @@ void	put_manage_data(t_manage_data *mdata)
 	printf("time[TO_DIE]           %ld\n", mdata->time[TO_DIE]);
 	printf("time[TO_EAT]           %ld\n", mdata->time[TO_EAT]);
 	printf("time[TO_SLEEP]         %ld\n", mdata->time[TO_SLEEP]);
-	printf("time[BE_STUFFED]       %ld\n", mdata->time[BE_STUFFED]);
+	printf("time[BE_FULL]       %ld\n", mdata->time[BE_FULL]);
 }
 
-void	put_thread_data(t_thread_data *pdata)
+void	put_data(t_data *pdata)
 {
 	printf("philo_data:\n");
 	printf("order            %d\n", pdata->order);
 	printf("time[TO_DIE]     %ld\n", pdata->time[TO_DIE]);
 	printf("time[TO_EAT]     %ld\n", pdata->time[TO_EAT]);
 	printf("time[TO_SLEEP]   %ld\n", pdata->time[TO_SLEEP]);
-	printf("time[BE_STUFFED] %ld\n", pdata->time[BE_STUFFED]);
+	printf("time[BE_FULL] %ld\n", pdata->time[BE_FULL]);
 	printf("time[LAST_EAT    %ld\n", pdata->time[LAST_EAT]);
 	printf("time_last_eat    %ld\n", *(pdata->time_last_eat));
 	printf("death_flag       %d\n", *(pdata->death_flag));
@@ -27,8 +27,8 @@ static bool	is_overflow(unsigned long num, \
 		int sign, bool *nonnum_check, long max)
 {
 	if (0 < num && \
-		((sign == 1 && max < num) || \
-		(sign == -1 && max < num - 1)))
+		((sign == 1 && (unsigned long)max < num) || \
+		(sign == -1 && (unsigned long)max < num - 1)))
 		return (true);
 	else if (*nonnum_check)
 		*nonnum_check = false;
@@ -135,12 +135,12 @@ static char	set_manage_data_options(t_manage_data *mdata, char **argv)
 		return (put_arg_error(argv[4]));
 	if (argv[5])
 	{
-		mdata->time[BE_STUFFED] = ft_atol(argv[5], &nonnum_check);
-		if (mdata->time[BE_STUFFED] < 0 || nonnum_check)
+		mdata->time[BE_FULL] = ft_atol(argv[5], &nonnum_check);
+		if (mdata->time[BE_FULL] < 0 || nonnum_check)
 			return (put_arg_error(argv[5]));
 	}
 	else
-		mdata->time[BE_STUFFED] = LONG_MAX;
+		mdata->time[BE_FULL] = LONG_MAX;
 	return (SUCCESS);
 }
 
@@ -149,10 +149,10 @@ char	set_manage_data(t_manage_data *mdata, char **argv)
 	if (set_manage_data_options(mdata, argv) == FAIL)
 		return (FAIL);
 	mdata->death_flag = NO_ONE_DIED;
-	mdata->philos = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->number_of_philosophers);
+	mdata->philos = (t_data *)malloc(sizeof(t_data) * mdata->number_of_philosophers);
 	if (!mdata->philos)
 		return (put_error("malloc for threads"));
-	mdata->monitors = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->number_of_philosophers);
+	mdata->monitors = (t_data *)malloc(sizeof(t_data) * mdata->number_of_philosophers);
 	if (!mdata->monitors)
 		return (put_error("malloc for threads"));
 	mdata->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->number_of_philosophers);
@@ -164,13 +164,13 @@ char	set_manage_data(t_manage_data *mdata, char **argv)
 	return (SUCCESS);
 }
 
-static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, int philo_index)
+static void	set_data_philo(t_manage_data *mdata, t_data *philo, int philo_index)
 {
 	philo->order = philo_index + 1;
 	philo->time[TO_DIE] = mdata->time[TO_DIE];
 	philo->time[TO_EAT] = mdata->time[TO_EAT];
 	philo->time[TO_SLEEP] = mdata->time[TO_SLEEP];
-	philo->time[BE_STUFFED] = mdata->time[BE_STUFFED];
+	philo->time[BE_FULL] = mdata->time[BE_FULL];
 	philo->time[LAST_EAT] = 0;
 	philo->time[SUM_EAT] = 0;
 	if (philo_index == 0)
@@ -186,13 +186,13 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, in
 	philo->monitor = mdata->monitors + philo_index;
 }
 
-static void	set_thread_data_monitor(t_thread_data *philo, t_thread_data *monitor)
+static void	set_data_monitor(t_data *philo, t_data *monitor)
 {
 	monitor->order = philo->order;
 	monitor->time[TO_DIE] = philo->time[TO_DIE];
 	monitor->time[TO_EAT] = philo->time[TO_EAT];
 	monitor->time[TO_SLEEP] = philo->time[TO_SLEEP];
-	monitor->time[BE_STUFFED] = philo->time[BE_STUFFED];
+	monitor->time[BE_FULL] = philo->time[BE_FULL];
 	monitor->time[LAST_EAT] = 0;
 	monitor->time[SUM_EAT] = 0;
 	monitor->mutex[RIGHT_FORK] = NULL;
@@ -205,17 +205,17 @@ static void	set_thread_data_monitor(t_thread_data *philo, t_thread_data *monitor
 	monitor->monitor = NULL;
 }
 
-char	set_thread_data(t_manage_data *mdata)
+char	set_data(t_manage_data *mdata)
 {
-	t_thread_data	*a_philo;
+	t_data	*a_philo;
 	int				philo_index;
 
 	philo_index = mdata->number_of_philosophers;
 	while (philo_index--)
 	{
 		a_philo = mdata->philos + philo_index;
-		set_thread_data_philo(mdata, a_philo, philo_index);
-		set_thread_data_monitor(a_philo, a_philo->monitor);
+		set_data_philo(mdata, a_philo, philo_index);
+		set_data_monitor(a_philo, a_philo->monitor);
 		pthread_mutex_init(mdata->forks + philo_index, NULL);
 		pthread_mutex_init(mdata->last_eat + philo_index, NULL);
 	}
@@ -236,7 +236,7 @@ long	gettimeofday_milisecond()
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-char	access_death_flag(t_thread_data *thread, t_access mode)
+char	access_death_flag(t_data *thread, t_access mode)
 {
 	char	result;
 
@@ -248,7 +248,7 @@ char	access_death_flag(t_thread_data *thread, t_access mode)
 	return (result);
 }
 
-long	access_time_last_eat(t_thread_data *thread, t_access mode)
+long	access_time_last_eat(t_data *thread, t_access mode)
 {
 	long	result;
 
@@ -260,7 +260,7 @@ long	access_time_last_eat(t_thread_data *thread, t_access mode)
 	return (result);
 }
 
-char	put_status(t_thread_data *thread, char *color, char *message, char to_die)
+char	put_status(t_data *thread, char *color, char *message, char to_die)
 {
 	char	status;
 
@@ -278,16 +278,16 @@ char	put_status(t_thread_data *thread, char *color, char *message, char to_die)
 	return (status);
 }
 
-char	philo_eat(t_thread_data *philo)
+char	philo_eat(t_data *philo)
 {
 	access_time_last_eat(philo, EDIT);
 	if (put_status(philo, GREEN, EAT, 0) == SUCCESS)
 	{
 		usleep(philo->time[TO_EAT] * 1000);
 		philo->time[SUM_EAT] += philo->time[TO_EAT];
-		if (philo->time[SUM_EAT] >= philo->time[BE_STUFFED])
+		if (philo->time[SUM_EAT] >= philo->time[BE_FULL])
 		{
-			put_status(philo, MAGENTA, STUFFED, 0);
+			put_status(philo, MAGENTA, FULL, 0);
 			return (FAIL);
 		}
 		return (SUCCESS);
@@ -296,7 +296,7 @@ char	philo_eat(t_thread_data *philo)
 		return (FAIL);
 }
 
-char	philo_sleep(t_thread_data *philo)
+char	philo_sleep(t_data *philo)
 {
 	if (put_status(philo, BLUE, SLEEP, 0) == SUCCESS)
 	{
@@ -307,7 +307,7 @@ char	philo_sleep(t_thread_data *philo)
 		return (FAIL);
 }
 
-char	philo_think(t_thread_data *philo)
+char	philo_think(t_data *philo)
 {
 	if (put_status(philo, CYAN, THINK, 0) == SUCCESS)
 		return (SUCCESS);
@@ -317,11 +317,11 @@ char	philo_think(t_thread_data *philo)
 
 void	*monitor_action(void *data)
 {
-	t_thread_data	*monitor;
+	t_data	*monitor;
 	long			time_last_eat;
 	long			time_now;
 
-	monitor = (t_thread_data *)data;
+	monitor = (t_data *)data;
 	while (1)
 	{
 		time_last_eat = access_time_last_eat(monitor, READ);
@@ -338,11 +338,11 @@ void	*monitor_action(void *data)
 
 void	*philo_action(void *data)
 {
-	t_thread_data	*philo;
-	t_thread_data	*minimoni;
+	t_data	*philo;
+	t_data	*minimoni;
 	char			status;
 
-	philo = (t_thread_data *)data;
+	philo = (t_data *)data;
 	minimoni = philo->monitor;
 	pthread_create(&(minimoni->thread_id), NULL, &monitor_action, minimoni);
 	if (philo->order % 2 == 1)
@@ -355,7 +355,7 @@ void	*philo_action(void *data)
 		status = philo_eat(philo);
 		pthread_mutex_unlock(philo->mutex[RIGHT_FORK]);
 		pthread_mutex_unlock(philo->mutex[LEFT_FORK]);
-		if (status == SUCCESS)// necessary to end by philo be stuffed.
+		if (status == SUCCESS)// necessary to end by philo be FULL.
 			status =  philo_sleep(philo);
 		if (status == SUCCESS)
 			status = philo_think(philo);
@@ -366,7 +366,7 @@ void	*philo_action(void *data)
 
 char	run_thread(t_manage_data *mdata)
 {
-	t_thread_data	*a_philo;
+	t_data	*a_philo;
 	int				philo_index;
 	long			time_start;
 
@@ -419,7 +419,7 @@ int	main(int argc, char **argv)
 		return (put_arg_error("number of argument"));
 	handle_memory(&mdata, INIT);
 	if (set_manage_data(&mdata, argv) == SUCCESS && \
-		set_thread_data(&mdata) == SUCCESS && \
+		set_data(&mdata) == SUCCESS && \
 		run_thread(&mdata) == SUCCESS)
 			return_status = SUCCESS;
 	else
