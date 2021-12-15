@@ -12,19 +12,19 @@ long	gettimeofday_milisecond()
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-char	access_death_flag(t_data *thread, t_access mode)
+t_life	access_life_flag(t_thread_data *thread, t_access mode)
 {
-	char	result;
+	t_life	result;
 
-	pthread_mutex_lock(thread->mutex[TO_DEATH_FLAG]);
+	pthread_mutex_lock(thread->mutex[TO_LIFE_FLAG]);
 	if (mode == EDIT)
-		*(thread->death_flag) = SOME_ONE_DIED;
-	result = *(thread->death_flag);
-	pthread_mutex_unlock(thread->mutex[TO_DEATH_FLAG]);
+		*(thread->life_flag) = SOME_ONE_DIED;
+	result = *(thread->life_flag);
+	pthread_mutex_unlock(thread->mutex[TO_LIFE_FLAG]);
 	return (result);
 }
 
-long	access_time_last_eat(t_data *thread, t_access mode)
+long	access_time_last_eat(t_thread_data *thread, t_access mode)
 {
 	long	result;
 
@@ -36,15 +36,15 @@ long	access_time_last_eat(t_data *thread, t_access mode)
 	return (result);
 }
 
-char	put_status(t_data *thread, char *color, char *message, char to_die)
+t_status	put_status(t_thread_data *thread, char *color, char *message, char to_die)
 {
-	char	status;
+	t_status	status;
 
 	pthread_mutex_lock(thread->mutex[TO_PUT]);
-	if (access_death_flag(thread, READ) == NO_ONE_DIED)
+	if (access_life_flag(thread, READ) == NO_ONE_DIED)
 	{
 		if (to_die)
-			access_death_flag(thread, EDIT);
+			access_life_flag(thread, EDIT);
 		printf("%s%ld %d is %s\n%s", color, gettimeofday_milisecond(), thread->order, message, RESET);
 		status = SUCCESS;
 	}
@@ -54,7 +54,7 @@ char	put_status(t_data *thread, char *color, char *message, char to_die)
 	return (status);
 }
 
-char	philo_eat(t_data *philo)
+t_status	philo_eat(t_thread_data *philo)
 {
 	access_time_last_eat(philo, EDIT);
 	if (put_status(philo, GREEN, EAT, 0) == SUCCESS)
@@ -72,7 +72,7 @@ char	philo_eat(t_data *philo)
 		return (FAIL);
 }
 
-char	philo_sleep(t_data *philo)
+t_status	philo_sleep(t_thread_data *philo)
 {
 	if (put_status(philo, BLUE, SLEEP, 0) == SUCCESS)
 	{
@@ -83,7 +83,7 @@ char	philo_sleep(t_data *philo)
 		return (FAIL);
 }
 
-char	philo_think(t_data *philo)
+t_status	philo_think(t_thread_data *philo)
 {
 	if (put_status(philo, CYAN, THINK, 0) == SUCCESS)
 		return (SUCCESS);
@@ -93,11 +93,11 @@ char	philo_think(t_data *philo)
 
 void	*monitor_action(void *data)
 {
-	t_data	*monitor;
+	t_thread_data	*monitor;
 	long			time_last_eat;
 	long			time_now;
 
-	monitor = (t_data *)data;
+	monitor = (t_thread_data *)data;
 	while (1)
 	{
 		time_last_eat = access_time_last_eat(monitor, READ);
@@ -114,11 +114,11 @@ void	*monitor_action(void *data)
 
 void	*philo_action(void *data)
 {
-	t_data	*philo;
-	t_data	*minimoni;
-	char			status;
+	t_thread_data	*philo;
+	t_thread_data	*minimoni;
+	t_status		status;
 
-	philo = (t_data *)data;
+	philo = (t_thread_data *)data;
 	minimoni = philo->monitor;
 	pthread_create(&(minimoni->thread_id), NULL, &monitor_action, minimoni);
 	if (philo->order % 2 == 1)
