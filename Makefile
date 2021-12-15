@@ -1,7 +1,6 @@
 NAME	= philo
 CC		= gcc
-#CFLAGS	= -Wall -Werror -Wextra -MMD -MP -I $(INCDIR)
-CFLAGS	= -Wall -Werror -Wextra -I $(INCDIR)
+CFLAGS	= -Wall -Werror -Wextra -MMD -MP -I $(INCDIR)
 INCDIR	= ./include
 SRCDIR	= ./src
 SRCNAME	=	main.c \
@@ -10,7 +9,7 @@ SRCNAME	=	main.c \
 			thread.c
 SRCS	= $(addprefix $(SRCDIR)/, $(SRCNAME))
 OBJS	= $(SRCS:.c=.o)
-#DEPS	= $(OBJS:.o=.d)
+DEPS	= $(OBJS:.o=.d)
 
 .PHONY: all
 all: $(NAME)
@@ -18,15 +17,10 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
 
-#.PHONY: clean
-#clean:
-#	$(RM) -rf *.dSYM
-#	$(RM) -rf $(OBJS) $(DEPS)
-
 .PHONY: clean
 clean:
 	$(RM) -rf *.dSYM
-	$(RM) -rf $(OBJS)
+	$(RM) -rf $(OBJS) $(DEPS)
 
 .PHONY: fclean
 fclean: clean
@@ -43,4 +37,4 @@ re: fclean all
 debug: CFLAGS += -g -fsanitize=integer -fsanitize=address -fsanitize=leak -fsanitize=thread
 debug: re
 
-#-include $(DEPS)
+-include $(DEPS)
