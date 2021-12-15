@@ -2,15 +2,19 @@ NAME	= philo
 CC		= gcc
 CFLAGS	= -Wall -Werror -Wextra -MMD -MP -I $(INCDIR)
 INCDIR	= ./include
+
 SRCDIR	= ./src
 SRCNAME	=	main.c \
 			lib.c \
 			put.c \
 			thread.c
 SRCS	= $(addprefix $(SRCDIR)/, $(SRCNAME))
+
 OBJDIR	= ./obj
-OBJS	= $(SRCNAME:%.c=$(OBJDIR)/%.o) # %(main), .c -> ./obj/, %(main), .o
-DEPS	= $(OBJS:.o=.d) # .o -> .d
+OBJNAME	= $(SRCNAME:.c=.o)
+OBJS	= $(addprefix $(OBJDIR)/, $(OBJNAME))
+
+DEPS	= $(OBJS:.o=.d)
 
 .PHONY: all
 all: $(OBJDIR) $(NAME)
