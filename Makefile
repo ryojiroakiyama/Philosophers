@@ -9,11 +9,14 @@ SRCNAME	=	main.c \
 			thread.c
 SRCS	= $(addprefix $(SRCDIR)/, $(SRCNAME))
 OBJDIR	= ./obj
-OBJS	= $(SRCNAME:%.c=$(OBJDIR)/%.o)
-DEPS	= $(OBJS:.o=.d)
+OBJS	= $(SRCNAME:%.c=$(OBJDIR)/%.o) # %(main), .c -> ./obj/, %(main), .o
+DEPS	= $(OBJS:.o=.d) # .o -> .d
 
 .PHONY: all
-all: $(NAME)
+all: $(OBJDIR) $(NAME)
+
+$(OBJDIR) :
+	mkdir -p obj
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
