@@ -71,7 +71,7 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, in
 	philo->mutex[LEFT_FORK] = mdata->forks + philo_index;
 	philo->mutex[TO_PUT] = &(mdata->put);
 	philo->mutex[TO_LAST_EAT] = mdata->last_eat + philo_index;
-	philo->mutex[TO_LIFE_FLAG] = &(mdata->death);
+	philo->mutex[TO_LIFE_FLAG] = &(mdata->life);
 	philo->time_last_eat = &(philo->time[LAST_EAT]);
 	philo->life_flag = &(mdata->life_flag);
 	philo->monitor = mdata->monitors + philo_index;
@@ -111,7 +111,7 @@ t_status	set_thread_data(t_manage_data *mdata)
 		pthread_mutex_init(mdata->last_eat + philo_index, NULL);
 	}
 	pthread_mutex_init(&(mdata->put), NULL);
-	pthread_mutex_init(&(mdata->death), NULL);
+	pthread_mutex_init(&(mdata->life), NULL);
 	return (SUCCESS);
 }
 
@@ -139,7 +139,7 @@ t_status	run_thread(t_manage_data *mdata)
 		pthread_mutex_destroy(mdata->last_eat + philo_index);
 	}
 	pthread_mutex_destroy(&(mdata->put));
-	pthread_mutex_destroy(&(mdata->death));
+	pthread_mutex_destroy(&(mdata->life));
 	return (SUCCESS);
 }
 
