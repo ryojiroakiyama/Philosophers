@@ -1,122 +1,5 @@
 #include "philo.h"
 
-void	put_manage_data(t_manage_data *mdata)
-{
-	printf("manage_data:\n");
-	printf("number_of_philosophers %d\n", mdata->number_of_philosophers);
-	printf("time[TO_DIE]           %ld\n", mdata->time[TO_DIE]);
-	printf("time[TO_EAT]           %ld\n", mdata->time[TO_EAT]);
-	printf("time[TO_SLEEP]         %ld\n", mdata->time[TO_SLEEP]);
-	printf("time[BE_STUFFED]       %ld\n", mdata->time[BE_STUFFED]);
-}
-
-void	put_thread_data(t_thread_data *pdata)
-{
-	printf("philo_data:\n");
-	printf("order            %d\n", pdata->order);
-	printf("time[TO_DIE]     %ld\n", pdata->time[TO_DIE]);
-	printf("time[TO_EAT]     %ld\n", pdata->time[TO_EAT]);
-	printf("time[TO_SLEEP]   %ld\n", pdata->time[TO_SLEEP]);
-	printf("time[BE_STUFFED] %ld\n", pdata->time[BE_STUFFED]);
-	printf("time[LAST_EAT    %ld\n", pdata->time[LAST_EAT]);
-	printf("time_last_eat    %ld\n", *(pdata->time_last_eat));
-	printf("death_flag       %d\n", *(pdata->death_flag));
-}
-
-static bool	is_overflow(unsigned long num, \
-		int sign, bool *nonnum_check, long max)
-{
-	if (0 < num && \
-		((sign == 1 && max < num) || \
-		(sign == -1 && max < num - 1)))
-		return (true);
-	else if (*nonnum_check)
-		*nonnum_check = false;
-	return (false);
-}
-
-static size_t	pass_isspace(char *str, size_t i)
-{
-	while (str[i] == '\t' || str[i] == '\n' || str[i] == '\v'
-		|| str[i] == '\f' || str[i] == '\r' || str[i] == ' ')
-		i++;
-	return (i);
-}
-
-long	ft_atol(char *str, bool *nonnum_check)
-{
-	size_t			i;
-	unsigned long	num;
-	int				sign;
-
-	i = 0;
-	num = 0;
-	sign = 1;
-	i = pass_isspace(str, i);
-	if (str[i] == '+')
-		i++;
-	else if (str[i] == '-' && ++i)
-		sign = -1;
-	*nonnum_check = true;
-	while (str[i] && ('0' <= str[i] && str[i] <= '9'))
-	{
-		num = num * 10 + (str[i] - '0');
-		if (is_overflow(num, sign, nonnum_check, LONG_MAX))
-			break ;
-		i++;
-	}
-	i = pass_isspace(str, i);
-	if (i == 0 || str[i] != '\0')
-		*nonnum_check = true;
-	return ((long)num * sign);
-}
-
-int	ft_atoi(char *str, bool *nonnum_check)
-{
-	size_t			i;
-	unsigned int	num;
-	int				sign;
-
-	i = 0;
-	num = 0;
-	sign = 1;
-	i = pass_isspace(str, i);
-	if (str[i] == '+')
-		i++;
-	else if (str[i] == '-' && ++i)
-		sign = -1;
-	*nonnum_check = true;
-	while (str[i] && ('0' <= str[i] && str[i] <= '9'))
-	{
-		num = num * 10 + (str[i] - '0');
-		if (is_overflow(num, sign, nonnum_check, INT_MAX))
-			break ;
-		i++;
-	}
-	i = pass_isspace(str, i);
-	if (i == 0 || str[i] != '\0')
-		*nonnum_check = true;
-	return ((int)num * sign);
-}
-
-char	put_error(char *message)
-{
-	printf("error: %s\n", message);
-	return (FAIL);
-}
-
-char	put_arg_error(char *message)
-{
-	printf("error: %s\n", message);
-	printf("type and order of arguments required:\n");
-	printf("1: number_of_philosophers\n");
-	printf("2: time_to_die\n");
-	printf("3: time_to_eat\n");
-	printf("4: time_to_sleep\n");
-	printf("5: number_of_times_each_philosopher_must_eat (is optional)\n");
-	return (FAIL);
-}
-
 static char	set_manage_data_options(t_manage_data *mdata, char **argv)
 {
 	bool	nonnum_check;
@@ -135,12 +18,12 @@ static char	set_manage_data_options(t_manage_data *mdata, char **argv)
 		return (put_arg_error(argv[4]));
 	if (argv[5])
 	{
-		mdata->time[BE_STUFFED] = ft_atol(argv[5], &nonnum_check);
-		if (mdata->time[BE_STUFFED] < 0 || nonnum_check)
+		mdata->time[BE_FULL] = ft_atol(argv[5], &nonnum_check);
+		if (mdata->time[BE_FULL] < 0 || nonnum_check)
 			return (put_arg_error(argv[5]));
 	}
 	else
-		mdata->time[BE_STUFFED] = LONG_MAX;
+		mdata->time[BE_FULL] = LONG_MAX;
 	return (SUCCESS);
 }
 
@@ -149,10 +32,10 @@ char	set_manage_data(t_manage_data *mdata, char **argv)
 	if (set_manage_data_options(mdata, argv) == FAIL)
 		return (FAIL);
 	mdata->death_flag = NO_ONE_DIED;
-	mdata->philos = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->number_of_philosophers);
+	mdata->philos = (t_data *)malloc(sizeof(t_data) * mdata->number_of_philosophers);
 	if (!mdata->philos)
 		return (put_error("malloc for threads"));
-	mdata->monitors = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->number_of_philosophers);
+	mdata->monitors = (t_data *)malloc(sizeof(t_data) * mdata->number_of_philosophers);
 	if (!mdata->monitors)
 		return (put_error("malloc for threads"));
 	mdata->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->number_of_philosophers);
@@ -164,13 +47,13 @@ char	set_manage_data(t_manage_data *mdata, char **argv)
 	return (SUCCESS);
 }
 
-static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, int philo_index)
+static void	set_data_philo(t_manage_data *mdata, t_data *philo, int philo_index)
 {
 	philo->order = philo_index + 1;
 	philo->time[TO_DIE] = mdata->time[TO_DIE];
 	philo->time[TO_EAT] = mdata->time[TO_EAT];
 	philo->time[TO_SLEEP] = mdata->time[TO_SLEEP];
-	philo->time[BE_STUFFED] = mdata->time[BE_STUFFED];
+	philo->time[BE_FULL] = mdata->time[BE_FULL];
 	philo->time[LAST_EAT] = 0;
 	philo->time[SUM_EAT] = 0;
 	if (philo_index == 0)
@@ -186,13 +69,13 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, in
 	philo->monitor = mdata->monitors + philo_index;
 }
 
-static void	set_thread_data_monitor(t_thread_data *philo, t_thread_data *monitor)
+static void	set_data_monitor(t_data *philo, t_data *monitor)
 {
 	monitor->order = philo->order;
 	monitor->time[TO_DIE] = philo->time[TO_DIE];
 	monitor->time[TO_EAT] = philo->time[TO_EAT];
 	monitor->time[TO_SLEEP] = philo->time[TO_SLEEP];
-	monitor->time[BE_STUFFED] = philo->time[BE_STUFFED];
+	monitor->time[BE_FULL] = philo->time[BE_FULL];
 	monitor->time[LAST_EAT] = 0;
 	monitor->time[SUM_EAT] = 0;
 	monitor->mutex[RIGHT_FORK] = NULL;
@@ -205,17 +88,17 @@ static void	set_thread_data_monitor(t_thread_data *philo, t_thread_data *monitor
 	monitor->monitor = NULL;
 }
 
-char	set_thread_data(t_manage_data *mdata)
+char	set_data(t_manage_data *mdata)
 {
-	t_thread_data	*a_philo;
+	t_data	*a_philo;
 	int				philo_index;
 
 	philo_index = mdata->number_of_philosophers;
 	while (philo_index--)
 	{
 		a_philo = mdata->philos + philo_index;
-		set_thread_data_philo(mdata, a_philo, philo_index);
-		set_thread_data_monitor(a_philo, a_philo->monitor);
+		set_data_philo(mdata, a_philo, philo_index);
+		set_data_monitor(a_philo, a_philo->monitor);
 		pthread_mutex_init(mdata->forks + philo_index, NULL);
 		pthread_mutex_init(mdata->last_eat + philo_index, NULL);
 	}
@@ -224,149 +107,9 @@ char	set_thread_data(t_manage_data *mdata)
 	return (SUCCESS);
 }
 
-long	gettimeofday_milisecond()
-{
-	struct timeval 	tv;
-
-	if (gettimeofday(&tv, NULL) == -1)
-	{
-		put_error("gettimeofday");
-		return (-1);
-	}
-	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
-}
-
-char	access_death_flag(t_thread_data *thread, t_access mode)
-{
-	char	result;
-
-	pthread_mutex_lock(thread->mutex[TO_DEATH_FLAG]);
-	if (mode == EDIT)
-		*(thread->death_flag) = SOME_ONE_DIED;
-	result = *(thread->death_flag);
-	pthread_mutex_unlock(thread->mutex[TO_DEATH_FLAG]);
-	return (result);
-}
-
-long	access_time_last_eat(t_thread_data *thread, t_access mode)
-{
-	long	result;
-
-	pthread_mutex_lock(thread->mutex[TO_LAST_EAT]);
-	if (mode == EDIT)
- 		*(thread->time_last_eat) = gettimeofday_milisecond();
-	result = *(thread->time_last_eat);
-	pthread_mutex_unlock(thread->mutex[TO_LAST_EAT]);
-	return (result);
-}
-
-char	put_status(t_thread_data *thread, char *color, char *message, char to_die)
-{
-	char	status;
-
-	pthread_mutex_lock(thread->mutex[TO_PUT]);
-	if (access_death_flag(thread, READ) == NO_ONE_DIED)
-	{
-		if (to_die)
-			access_death_flag(thread, EDIT);
-		printf("%s%ld %d is %s\n%s", color, gettimeofday_milisecond(), thread->order, message, RESET);
-		status = SUCCESS;
-	}
-	else
-		status = FAIL;
-	pthread_mutex_unlock(thread->mutex[TO_PUT]);
-	return (status);
-}
-
-char	philo_eat(t_thread_data *philo)
-{
-	access_time_last_eat(philo, EDIT);
-	if (put_status(philo, GREEN, EAT, 0) == SUCCESS)
-	{
-		usleep(philo->time[TO_EAT] * 1000);
-		philo->time[SUM_EAT] += philo->time[TO_EAT];
-		if (philo->time[SUM_EAT] >= philo->time[BE_STUFFED])
-		{
-			put_status(philo, MAGENTA, STUFFED, 0);
-			return (FAIL);
-		}
-		return (SUCCESS);
-	}
-	else
-		return (FAIL);
-}
-
-char	philo_sleep(t_thread_data *philo)
-{
-	if (put_status(philo, BLUE, SLEEP, 0) == SUCCESS)
-	{
-		usleep(philo->time[TO_SLEEP] * 1000);
-		return (SUCCESS);
-	}
-	else
-		return (FAIL);
-}
-
-char	philo_think(t_thread_data *philo)
-{
-	if (put_status(philo, CYAN, THINK, 0) == SUCCESS)
-		return (SUCCESS);
-	else
-		return (FAIL);
-}
-
-void	*monitor_action(void *data)
-{
-	t_thread_data	*monitor;
-	long			time_last_eat;
-	long			time_now;
-
-	monitor = (t_thread_data *)data;
-	while (1)
-	{
-		time_last_eat = access_time_last_eat(monitor, READ);
-		time_now = gettimeofday_milisecond();
-		if (time_now - time_last_eat > monitor->time[TO_DIE])
-		{
-			put_status(monitor, RED, DIE, 1);
-			break ;
-		}
-		usleep(10000);
-	}
-	return (data);
-}
-
-void	*philo_action(void *data)
-{
-	t_thread_data	*philo;
-	t_thread_data	*minimoni;
-	char			status;
-
-	philo = (t_thread_data *)data;
-	minimoni = philo->monitor;
-	pthread_create(&(minimoni->thread_id), NULL, &monitor_action, minimoni);
-	if (philo->order % 2 == 1)
-		usleep(200);
-	status = SUCCESS;
-	while (status == SUCCESS)
-	{
-		pthread_mutex_lock(philo->mutex[RIGHT_FORK]);
-		pthread_mutex_lock(philo->mutex[LEFT_FORK]);
-		status = philo_eat(philo);
-		pthread_mutex_unlock(philo->mutex[RIGHT_FORK]);
-		pthread_mutex_unlock(philo->mutex[LEFT_FORK]);
-		if (status == SUCCESS)// necessary to end by philo be stuffed.
-			status =  philo_sleep(philo);
-		if (status == SUCCESS)
-			status = philo_think(philo);
-	}
-	pthread_join(minimoni->thread_id, NULL);
-	return (data);
-}
-
 char	run_thread(t_manage_data *mdata)
 {
-	t_thread_data	*a_philo;
+	t_data	*a_philo;
 	int				philo_index;
 	long			time_start;
 
@@ -416,10 +159,10 @@ int	main(int argc, char **argv)
 	char			return_status;
 
 	if (!(5 <= argc && argc <= 6))
-		return (put_arg_error("number of argument"));
+		return (put_arg_error("number of arguments"));
 	handle_memory(&mdata, INIT);
 	if (set_manage_data(&mdata, argv) == SUCCESS && \
-		set_thread_data(&mdata) == SUCCESS && \
+		set_data(&mdata) == SUCCESS && \
 		run_thread(&mdata) == SUCCESS)
 			return_status = SUCCESS;
 	else
