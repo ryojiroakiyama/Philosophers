@@ -8,11 +8,15 @@ SRCNAME	=	main.c \
 			put.c \
 			thread.c
 SRCS	= $(addprefix $(SRCDIR)/, $(SRCNAME))
-OBJS	= $(SRCS:.c=.o)
+OBJDIR	= ./obj
+OBJS	= $(SRCNAME:%.c=$(OBJDIR)/%.o)
 DEPS	= $(OBJS:.o=.d)
 
 .PHONY: all
 all: $(NAME)
+
+$(OBJDIR)/%.o : $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
