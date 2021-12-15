@@ -89,7 +89,7 @@ typedef struct s_thread_data
 **  last_eat:	mutex for access to time_last_eat(each thread's member)
 **				last_eat[i] is shared by philos[i] <-> monitors[i].
 **  put:		mutex for use to put_status(). is shared by all threads.
-**  death:		mutex for access to life_flag. is shared by all threads.
+**  life:		mutex for access to life_flag. is shared by all threads.
 **  life_flag:	flag indicate no one died or not. 
 */
 typedef struct s_manage_data
@@ -101,7 +101,7 @@ typedef struct s_manage_data
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*last_eat;
 	pthread_mutex_t	put;
-	pthread_mutex_t	death;
+	pthread_mutex_t	life;
 	t_life			life_flag;
 }	t_manage_data;
 
