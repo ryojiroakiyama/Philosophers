@@ -1,6 +1,14 @@
 #include "philo.h"
 
-static char	set_manage_data_options(t_manage_data *mdata, char **argv)
+// for handle memory
+typedef enum e_memory
+{
+	INIT,
+	FREE,
+	MEMORY_NUM
+}	t_memory;
+
+static t_status	set_manage_data_options(t_manage_data *mdata, char **argv)
 {
 	bool	nonnum_check;
 
@@ -27,15 +35,15 @@ static char	set_manage_data_options(t_manage_data *mdata, char **argv)
 	return (SUCCESS);
 }
 
-char	set_manage_data(t_manage_data *mdata, char **argv)
+t_status	set_manage_data(t_manage_data *mdata, char **argv)
 {
 	if (set_manage_data_options(mdata, argv) == FAIL)
 		return (FAIL);
-	mdata->death_flag = NO_ONE_DIED;
-	mdata->philos = (t_data *)malloc(sizeof(t_data) * mdata->number_of_philosophers);
+	mdata->life_flag = NO_ONE_DIED;
+	mdata->philos = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->number_of_philosophers);
 	if (!mdata->philos)
 		return (put_error("malloc for threads"));
-	mdata->monitors = (t_data *)malloc(sizeof(t_data) * mdata->number_of_philosophers);
+	mdata->monitors = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->number_of_philosophers);
 	if (!mdata->monitors)
 		return (put_error("malloc for threads"));
 	mdata->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->number_of_philosophers);
@@ -47,7 +55,7 @@ char	set_manage_data(t_manage_data *mdata, char **argv)
 	return (SUCCESS);
 }
 
-static void	set_data_philo(t_manage_data *mdata, t_data *philo, int philo_index)
+static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, int philo_index)
 {
 	philo->order = philo_index + 1;
 	philo->time[TO_DIE] = mdata->time[TO_DIE];
@@ -63,13 +71,13 @@ static void	set_data_philo(t_manage_data *mdata, t_data *philo, int philo_index)
 	philo->mutex[LEFT_FORK] = mdata->forks + philo_index;
 	philo->mutex[TO_PUT] = &(mdata->put);
 	philo->mutex[TO_LAST_EAT] = mdata->last_eat + philo_index;
-	philo->mutex[TO_DEATH_FLAG] = &(mdata->death);
+	philo->mutex[TO_LIFE_FLAG] = &(mdata->death);
 	philo->time_last_eat = &(philo->time[LAST_EAT]);
-	philo->death_flag = &(mdata->death_flag);
+	philo->life_flag = &(mdata->life_flag);
 	philo->monitor = mdata->monitors + philo_index;
 }
 
-static void	set_data_monitor(t_data *philo, t_data *monitor)
+static void	set_thread_data_monitor(t_thread_data *philo, t_thread_data *monitor)
 {
 	monitor->order = philo->order;
 	monitor->time[TO_DIE] = philo->time[TO_DIE];
@@ -82,23 +90,23 @@ static void	set_data_monitor(t_data *philo, t_data *monitor)
 	monitor->mutex[LEFT_FORK] = NULL;
 	monitor->mutex[TO_PUT] = philo->mutex[TO_PUT];
 	monitor->mutex[TO_LAST_EAT] = philo->mutex[TO_LAST_EAT];
-	monitor->mutex[TO_DEATH_FLAG] = philo->mutex[TO_DEATH_FLAG];
+	monitor->mutex[TO_LIFE_FLAG] = philo->mutex[TO_LIFE_FLAG];
 	monitor->time_last_eat = philo->time_last_eat;
-	monitor->death_flag = philo->death_flag;
+	monitor->life_flag = philo->life_flag;
 	monitor->monitor = NULL;
 }
 
-char	set_data(t_manage_data *mdata)
+t_status	set_thread_data(t_manage_data *mdata)
 {
-	t_data	*a_philo;
+	t_thread_data	*a_philo;
 	int				philo_index;
 
 	philo_index = mdata->number_of_philosophers;
 	while (philo_index--)
 	{
 		a_philo = mdata->philos + philo_index;
-		set_data_philo(mdata, a_philo, philo_index);
-		set_data_monitor(a_philo, a_philo->monitor);
+		set_thread_data_philo(mdata, a_philo, philo_index);
+		set_thread_data_monitor(a_philo, a_philo->monitor);
 		pthread_mutex_init(mdata->forks + philo_index, NULL);
 		pthread_mutex_init(mdata->last_eat + philo_index, NULL);
 	}
@@ -107,9 +115,9 @@ char	set_data(t_manage_data *mdata)
 	return (SUCCESS);
 }
 
-char	run_thread(t_manage_data *mdata)
+t_status	run_thread(t_manage_data *mdata)
 {
-	t_data	*a_philo;
+	t_thread_data	*a_philo;
 	int				philo_index;
 	long			time_start;
 
@@ -156,13 +164,13 @@ static void	handle_memory(t_manage_data *mdata, t_memory mode)
 int	main(int argc, char **argv)
 {
 	t_manage_data	mdata;
-	char			return_status;
+	t_status		return_status;
 
 	if (!(5 <= argc && argc <= 6))
 		return (put_arg_error("number of arguments"));
 	handle_memory(&mdata, INIT);
 	if (set_manage_data(&mdata, argv) == SUCCESS && \
-		set_data(&mdata) == SUCCESS && \
+		set_thread_data(&mdata) == SUCCESS && \
 		run_thread(&mdata) == SUCCESS)
 			return_status = SUCCESS;
 	else

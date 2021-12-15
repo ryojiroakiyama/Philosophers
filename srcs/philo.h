@@ -8,14 +8,6 @@
 #include <libc.h>
 #include <stdbool.h>
 
-// status
-# define SUCCESS 0
-# define FAIL 1
-
-// flag some one died or not
-# define NO_ONE_DIED 0
-# define SOME_ONE_DIED 1
-
 // message to put there status
 # define EAT "eating"
 # define SLEEP "sleeping"
@@ -34,6 +26,21 @@
 # define MAGENTA "\033[35m"
 # define RESET "\033[0m"
 
+// status some one died or not
+typedef enum e_life
+{
+	NO_ONE_DIED,
+	SOME_ONE_DIED
+}	t_life;
+
+// status fucntions return
+typedef enum e_status
+{
+	SUCCESS,
+	FAIL
+}	t_status;
+
+// mode of access to the functions threads use
 typedef enum e_access
 {
 	READ,
@@ -41,20 +48,13 @@ typedef enum e_access
 	ACCESS_NUM
 }	t_access;
 
-typedef enum e_memory
-{
-	INIT,
-	FREE,
-	MEMORY_NUM
-}	t_memory;
-
 typedef enum e_mutex
 {
 	RIGHT_FORK,
 	LEFT_FORK,
 	TO_PUT,
 	TO_LAST_EAT,
-	TO_DEATH_FLAG,
+	TO_LIFE_FLAG,
 	MUTEX_NUM
 }	t_mutex;
 
@@ -69,17 +69,17 @@ typedef enum e_time
 	TIME_NUM
 }	t_time;
 
-typedef struct s_data
+typedef struct s_thread_data
 {
-	pthread_t		thread_id;
-	int				order;
-	long			time[TIME_NUM];
-	pthread_mutex_t	*mutex[MUTEX_NUM];
-	long			*time_last_eat;// = &time[LAST_EAT](it's member)
-	char			*death_flag;// = &mdata->death_flag
-	struct s_data	*monitor;/* monitor->time_last_eat = &time[LAST_EAT](philo's member)
-								monitor->death_flag = &mdata->death_flag */
-}	t_data;
+	pthread_t				thread_id;
+	int						order;
+	long					time[TIME_NUM];
+	pthread_mutex_t			*mutex[MUTEX_NUM];
+	long					*time_last_eat;// = &time[LAST_EAT](it's member)
+	t_life					*life_flag;// = &mdata->life_flag
+	struct s_thread_data	*monitor;/* monitor->time_last_eat = &time[LAST_EAT](philo's member)
+										monitor->life_flag = &mdata->life_flag */
+}	t_thread_data;
 
 /*
 ** Members
@@ -89,46 +89,46 @@ typedef struct s_data
 **  last_eat:	mutex for access to time_last_eat(each thread's member)
 **				last_eat[i] is shared by philos[i] <-> monitors[i].
 **  put:		mutex for use to put_status(). is shared by all threads.
-**  death:		mutex for access to death_flag. is shared by all threads.
-**  death_flag:	flag indicate no one died or not. 
+**  death:		mutex for access to life_flag. is shared by all threads.
+**  life_flag:	flag indicate no one died or not. 
 */
 typedef struct s_manage_data
 {
 	int				number_of_philosophers;
 	long			time[TIME_NUM];
-	t_data			*philos;
-	t_data			*monitors;
+	t_thread_data	*philos;
+	t_thread_data	*monitors;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*last_eat;
 	pthread_mutex_t	put;
 	pthread_mutex_t	death;
-	char			death_flag;
+	t_life			life_flag;
 }	t_manage_data;
 
 // lib.c
-long	ft_atol(char *str, bool *nonnum_check);
-int		ft_atoi(char *str, bool *nonnum_check);
+long		ft_atol(char *str, bool *nonnum_check);
+int			ft_atoi(char *str, bool *nonnum_check);
 
 // put.c
-void	put_manage_data(t_manage_data *mdata);
-void	put_data(t_data *pdata);
-char	put_error(char *message);
-char	put_arg_error(char *message);
+void		put_manage_data(t_manage_data *mdata);
+void		put_thread_data(t_thread_data *pdata);
+t_status	put_error(char *message);
+t_status	put_arg_error(char *message);
 
 // thread
-long	gettimeofday_milisecond();
-char	access_death_flag(t_data *thread, t_access mode);
-long	access_time_last_eat(t_data *thread, t_access mode);
-char	put_status(t_data *thread, char *color, char *message, char to_die);
-char	philo_eat(t_data *philo);
-char	philo_sleep(t_data *philo);
-char	philo_think(t_data *philo);
-void	*monitor_action(void *data);
-void	*philo_action(void *data);
+long		gettimeofday_milisecond();
+t_life		access_life_flag(t_thread_data *thread, t_access mode);
+long		access_time_last_eat(t_thread_data *thread, t_access mode);
+t_status	put_status(t_thread_data *thread, char *color, char *message, char to_die);
+t_status	philo_eat(t_thread_data *philo);
+t_status	philo_sleep(t_thread_data *philo);
+t_status	philo_think(t_thread_data *philo);
+void		*monitor_action(void *data);
+void		*philo_action(void *data);
 
 // main
-char	set_manage_data(t_manage_data *mdata, char **argv);
-char	set_data(t_manage_data *mdata);
-char	run_thread(t_manage_data *mdata);
+t_status	set_manage_data(t_manage_data *mdata, char **argv);
+t_status	set_thread_data(t_manage_data *mdata);
+t_status	run_thread(t_manage_data *mdata);
 
 #endif
