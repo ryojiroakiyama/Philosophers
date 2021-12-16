@@ -1,11 +1,11 @@
 #include "philo.h"
 
 static bool	is_overflow(unsigned long num, \
-		int sign, bool *nonnum_check, long max)
+		int sign, bool *nonnum_check, unsigned long max)
 {
 	if (0 < num && \
-		((sign == 1 && (unsigned long)max < num) || \
-		(sign == -1 && (unsigned long)max < num - 1)))
+		((sign == 1 && max < num) || \
+		(sign == -1 && max < num - 1)))
 		return (true);
 	else if (*nonnum_check)
 		*nonnum_check = false;
