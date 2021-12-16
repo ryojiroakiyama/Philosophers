@@ -11,31 +11,28 @@ SRCNAME	=	main.c \
 SRCS	= $(addprefix $(SRCDIR)/, $(SRCNAME))
 
 OBJDIR	= ./obj
-OBJNAME	= $(SRCNAME:.c=.o)
-OBJS	= $(addprefix $(OBJDIR)/, $(OBJNAME))
-
+OBJS	= $(SRCNAME:%.c=$(OBJDIR)/%.o)
 DEPS	= $(OBJS:.o=.d)
 
 .PHONY: all
-all: $(OBJDIR) $(NAME)
+all: $(NAME)
 
-$(OBJDIR) :
-	mkdir -p obj
+$(NAME): $(OBJDIR) $(OBJS)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
 
-$(OBJDIR)/%.o : $(SRCDIR)/%.c
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
+$(OBJDIR):
+	mkdir -p obj
 
 .PHONY: clean
 clean:
-	$(RM) -rf *.dSYM
-	$(RM) -rf $(OBJS) $(DEPS)
+	$(RM) -rf $(OBJDIR) *.dSYM
 
 .PHONY: fclean
 fclean: clean
-	$(RM) -rf $(NAME)
+	$(RM) -f $(NAME)
 
 .PHONY: re
 re: fclean all
