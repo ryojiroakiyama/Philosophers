@@ -101,7 +101,7 @@ int	main(int argc, char *argv[])
 	else
 		return_status = FAIL;
 	handle_memory(&mdata, FREE);
-	// if (system("leaks a.out >/dev/null"))
-	// 	system("leaks a.out");
+	// if (system("leaks philo >/dev/null"))
+	// 	system("leaks philo");
 	return (return_status);
 }
