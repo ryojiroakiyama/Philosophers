@@ -53,11 +53,8 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, in
 	philo->times_must_eat = mdata->times_must_eat;
 	copy_array(mdata->time, philo->time, TIME_NUM);
 	philo->life_flag = &(mdata->life_flag);
-	if (philo_index == 0)
-		philo->mutex[RIGHT_FORK] = mdata->forks + (mdata->philo_num - 1);
-	else
-		philo->mutex[RIGHT_FORK] = mdata->forks + (philo_index - 1);
-	philo->mutex[LEFT_FORK] = mdata->forks + philo_index;
+	philo->mutex[RIGHT_FORK] = mdata->forks + philo_index;
+	philo->mutex[LEFT_FORK] = mdata->forks + ((philo_index + 1) % mdata->philo_num);
 	philo->mutex[TO_PUT] = &(mdata->put);
 	philo->mutex[TO_LAST_EAT] = mdata->last_eat + philo_index;
 	philo->mutex[TO_LIFE_FLAG] = &(mdata->life);

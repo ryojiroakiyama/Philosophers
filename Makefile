@@ -43,7 +43,7 @@ re: fclean all
 #	./test.sh
 
 .PHONY: debug
-debug: CFLAGS += -g -fsanitize=integer -fsanitize=address -fsanitize=leak -fsanitize=thread
+debug: CFLAGS += -g -fsanitize=thread
 debug: re
 
 -include $(DEPS)
