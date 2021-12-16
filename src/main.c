@@ -55,11 +55,11 @@ static void	handle_memory(t_manage_data *mdata, t_memory mode)
 }
 
 /*
-** options[0]: number_of_philosophers, int
-**        [1]: time_to_die, long
-**        [2]: time_to_eat, long
-**        [3]: time_to_sleep, long
-**        [4]: number_of_times_each_philosopher_must_eat, int
+**  argv[1] options[0]: number_of_philosophers, int
+**      [2]        [1]: time_to_die, long
+**      [3]        [2]: time_to_eat, long
+**      [4]        [3]: time_to_sleep, long
+**      [5]        [4]: number_of_times_each_philosopher_must_eat, int
 */
 static t_status get_options(int argc, char *argv[], long options[OPTION_NUM])
 {
