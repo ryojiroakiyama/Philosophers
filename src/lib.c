@@ -1,14 +1,14 @@
 #include "philo.h"
 
 static bool	is_overflow(unsigned long num, \
-		int sign, bool *nonnum_check, unsigned long max)
+		int sign, bool *invalid, long max)
 {
 	if (0 < num && \
-		((sign == 1 && max < num) || \
-		(sign == -1 && max < num - 1)))
+		((sign == 1 && (unsigned long)max < num) || \
+		(sign == -1 && (unsigned long)max < num - 1)))
 		return (true);
-	else if (*nonnum_check)
-		*nonnum_check = false;
+	else if (*invalid)
+		*invalid = false;
 	return (false);
 }
 
@@ -20,7 +20,7 @@ static size_t	pass_isspace(char *str, size_t i)
 	return (i);
 }
 
-long	ft_atol(char *str, bool *nonnum_check)
+long	ft_atol(char *str, bool *invalid)
 {
 	size_t			i;
 	unsigned long	num;
@@ -34,21 +34,21 @@ long	ft_atol(char *str, bool *nonnum_check)
 		i++;
 	else if (str[i] == '-' && ++i)
 		sign = -1;
-	*nonnum_check = true;
+	*invalid = true;
 	while (str[i] && ('0' <= str[i] && str[i] <= '9'))
 	{
 		num = num * 10 + (str[i] - '0');
-		if (is_overflow(num, sign, nonnum_check, LONG_MAX))
+		if (is_overflow(num, sign, invalid, LONG_MAX))
 			break ;
 		i++;
 	}
 	i = pass_isspace(str, i);
 	if (i == 0 || str[i] != '\0')
-		*nonnum_check = true;
+		*invalid = true;
 	return ((long)num * sign);
 }
 
-int	ft_atoi(char *str, bool *nonnum_check)
+int	ft_atoi(char *str, bool *invalid)
 {
 	size_t			i;
 	unsigned int	num;
@@ -62,16 +62,16 @@ int	ft_atoi(char *str, bool *nonnum_check)
 		i++;
 	else if (str[i] == '-' && ++i)
 		sign = -1;
-	*nonnum_check = true;
+	*invalid = true;
 	while (str[i] && ('0' <= str[i] && str[i] <= '9'))
 	{
 		num = num * 10 + (str[i] - '0');
-		if (is_overflow(num, sign, nonnum_check, INT_MAX))
+		if (is_overflow(num, sign, invalid, INT_MAX))
 			break ;
 		i++;
 	}
 	i = pass_isspace(str, i);
 	if (i == 0 || str[i] != '\0')
-		*nonnum_check = true;
+		*invalid = true;
 	return ((int)num * sign);
 }

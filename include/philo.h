@@ -26,6 +26,9 @@
 # define MAGENTA "\033[35m"
 # define RESET "\033[0m"
 
+// option
+# define UNSPECIFIED -1
+
 // status some one died or not
 typedef enum e_life
 {
@@ -48,6 +51,16 @@ typedef enum e_access
 	ACCESS_NUM
 }	t_access;
 
+typedef enum e_option
+{
+	NUM_OF_PHILO,
+	TIME_TO_DIE,
+	TIME_TO_EAT,
+	TIME_TO_SLEEP,
+	TIMES_PHILO_MUST_EAT,
+	OPTION_NUM
+}	t_option;
+
 typedef enum e_mutex
 {
 	RIGHT_FORK,
@@ -63,7 +76,6 @@ typedef enum e_time
 	TO_DIE,
 	TO_EAT,
 	TO_SLEEP,
-	BE_FULL,
 	LAST_EAT,
 	SUM_EAT,
 	TIME_NUM
@@ -73,6 +85,7 @@ typedef struct s_thread_data
 {
 	pthread_t				thread_id;
 	int						order;
+	int						times_must_eat;
 	long					time[TIME_NUM];
 	pthread_mutex_t			*mutex[MUTEX_NUM];
 	long					*time_last_eat;// = &time[LAST_EAT](it's member)
@@ -93,9 +106,10 @@ typedef struct s_thread_data
 */
 typedef struct s_manage_data
 {
-	int				number_of_philosophers;
-	t_life			life_flag;
+	int				philo_num;
+	int				times_must_eat;
 	long			time[TIME_NUM];
+	t_life			life_flag;
 	t_thread_data	*philos;
 	t_thread_data	*monitors;
 	pthread_mutex_t	*forks;
@@ -105,8 +119,8 @@ typedef struct s_manage_data
 }	t_manage_data;
 
 // lib.c
-long		ft_atol(char *str, bool *nonnum_check);
-int			ft_atoi(char *str, bool *nonnum_check);
+long		ft_atol(char *str, bool *is_valid);
+int			ft_atoi(char *str, bool *is_valid);
 
 // put.c
 void		put_manage_data(t_manage_data *mdata);
@@ -126,7 +140,7 @@ void		*monitor_action(void *data);
 void		*philo_action(void *data);
 
 // main
-t_status	set_manage_data(t_manage_data *mdata, char **argv);
+t_status	set_manage_data(t_manage_data *mdata, long options[OPTION_NUM]);
 t_status	set_thread_data(t_manage_data *mdata);
 t_status	run_thread(t_manage_data *mdata);
 

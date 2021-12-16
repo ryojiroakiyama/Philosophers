@@ -1,63 +1,60 @@
 #include "philo.h"
 
-static t_status	set_manage_data_options(t_manage_data *mdata, char **argv)
+static void	set_options(t_manage_data *mdata, long options[OPTION_NUM])
 {
-	bool	nonnum_check;
+	t_time	idx_time;
 
-	mdata->number_of_philosophers = ft_atoi(argv[1], &nonnum_check);
-	if (mdata->number_of_philosophers < 0 || nonnum_check)
-		return (put_arg_error(argv[1]));
-	mdata->time[TO_DIE] = ft_atol(argv[2], &nonnum_check);
-	if (mdata->time[TO_DIE] < 0 || nonnum_check)
-		return (put_arg_error(argv[2]));
-	mdata->time[TO_EAT] = ft_atol(argv[3], &nonnum_check);
-	if (mdata->time[TO_EAT] < 0 || nonnum_check)
-		return (put_arg_error(argv[3]));
-	mdata->time[TO_SLEEP] = ft_atol(argv[4], &nonnum_check);
-	if (mdata->time[TO_SLEEP] < 0 || nonnum_check)
-		return (put_arg_error(argv[4]));
-	if (argv[5])
+	mdata->philo_num = options[NUM_OF_PHILO];
+	mdata->times_must_eat = options[TIMES_PHILO_MUST_EAT];
+	idx_time = 0;
+	while (idx_time < TIME_NUM)
 	{
-		mdata->time[BE_FULL] = ft_atol(argv[5], &nonnum_check);
-		if (mdata->time[BE_FULL] < 0 || nonnum_check)
-			return (put_arg_error(argv[5]));
+		mdata->time[idx_time] = 0;
+		if (idx_time <= TO_SLEEP)
+			mdata->time[idx_time] = options[idx_time + 1];
+		idx_time++;
 	}
-	else
-		mdata->time[BE_FULL] = LONG_MAX;
+}
+
+t_status	set_manage_data(t_manage_data *mdata, long options[OPTION_NUM])
+{
+	set_options(mdata, options);
+	mdata->life_flag = NO_ONE_DIED;
+	mdata->philos = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->philo_num);
+	if (!mdata->philos)
+		return (put_error("malloc for philo thread"));
+	mdata->monitors = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->philo_num);
+	if (!mdata->monitors)
+		return (put_error("malloc for monitor thread"));
+	mdata->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->philo_num);
+	if (!mdata->forks)
+		return (put_error("malloc for fork mutex"));
+	mdata->last_eat = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->philo_num);
+	if (!mdata->last_eat)
+		return (put_error("malloc for last_eat mutex"));
 	return (SUCCESS);
 }
 
-t_status	set_manage_data(t_manage_data *mdata, char **argv)
+static void copy_array(long original[], long copy[], int size)
 {
-	if (set_manage_data_options(mdata, argv) == FAIL)
-		return (FAIL);
-	mdata->life_flag = NO_ONE_DIED;
-	mdata->philos = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->number_of_philosophers);
-	if (!mdata->philos)
-		return (put_error("malloc for threads"));
-	mdata->monitors = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->number_of_philosophers);
-	if (!mdata->monitors)
-		return (put_error("malloc for threads"));
-	mdata->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->number_of_philosophers);
-	if (!mdata->forks)
-		return (put_error("malloc for forks"));
-	mdata->last_eat = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->number_of_philosophers);
-	if (!mdata->last_eat)
-		return (put_error("malloc for last_eat"));
-	return (SUCCESS);
+	int	idx;
+
+	idx = 0;
+	while (idx < size)
+	{
+		copy[idx] = original[idx];
+		idx++;
+	}
 }
 
 static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, int philo_index)
 {
 	philo->order = philo_index + 1;
-	philo->time[TO_DIE] = mdata->time[TO_DIE];
-	philo->time[TO_EAT] = mdata->time[TO_EAT];
-	philo->time[TO_SLEEP] = mdata->time[TO_SLEEP];
-	philo->time[BE_FULL] = mdata->time[BE_FULL];
-	philo->time[LAST_EAT] = 0;
-	philo->time[SUM_EAT] = 0;
+	philo->times_must_eat = mdata->times_must_eat;
+	copy_array(mdata->time, philo->time, TIME_NUM);
+	philo->life_flag = &(mdata->life_flag);
 	if (philo_index == 0)
-		philo->mutex[RIGHT_FORK] = mdata->forks + (mdata->number_of_philosophers - 1);
+		philo->mutex[RIGHT_FORK] = mdata->forks + (mdata->philo_num - 1);
 	else
 		philo->mutex[RIGHT_FORK] = mdata->forks + (philo_index - 1);
 	philo->mutex[LEFT_FORK] = mdata->forks + philo_index;
@@ -65,19 +62,14 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, in
 	philo->mutex[TO_LAST_EAT] = mdata->last_eat + philo_index;
 	philo->mutex[TO_LIFE_FLAG] = &(mdata->life);
 	philo->time_last_eat = &(philo->time[LAST_EAT]);
-	philo->life_flag = &(mdata->life_flag);
 	philo->monitor = mdata->monitors + philo_index;
 }
 
 static void	set_thread_data_monitor(t_thread_data *philo, t_thread_data *monitor)
 {
 	monitor->order = philo->order;
-	monitor->time[TO_DIE] = philo->time[TO_DIE];
-	monitor->time[TO_EAT] = philo->time[TO_EAT];
-	monitor->time[TO_SLEEP] = philo->time[TO_SLEEP];
-	monitor->time[BE_FULL] = philo->time[BE_FULL];
-	monitor->time[LAST_EAT] = 0;
-	monitor->time[SUM_EAT] = 0;
+	monitor->times_must_eat = philo->times_must_eat;
+	copy_array(philo->time, monitor->time, TIME_NUM);
 	monitor->mutex[RIGHT_FORK] = NULL;
 	monitor->mutex[LEFT_FORK] = NULL;
 	monitor->mutex[TO_PUT] = philo->mutex[TO_PUT];
@@ -93,7 +85,7 @@ t_status	set_thread_data(t_manage_data *mdata)
 	t_thread_data	*a_philo;
 	int				philo_index;
 
-	philo_index = mdata->number_of_philosophers;
+	philo_index = mdata->philo_num;
 	while (philo_index--)
 	{
 		a_philo = mdata->philos + philo_index;
@@ -104,5 +96,12 @@ t_status	set_thread_data(t_manage_data *mdata)
 	}
 	pthread_mutex_init(&(mdata->put), NULL);
 	pthread_mutex_init(&(mdata->life), NULL);
+	//philo_index = 0;
+	//while (philo_index < 5)
+	//{
+	//	put_thread_data(mdata->philos + philo_index);
+	//	philo_index++;
+	//}
+	//exit(0);
 	return (SUCCESS);
 }

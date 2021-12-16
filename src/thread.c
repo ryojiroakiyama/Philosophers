@@ -60,12 +60,12 @@ t_status	philo_eat(t_thread_data *philo)
 	if (put_status(philo, GREEN, EAT, 0) == SUCCESS)
 	{
 		usleep(philo->time[TO_EAT] * 1000);
-		philo->time[SUM_EAT] += philo->time[TO_EAT];
-		if (philo->time[SUM_EAT] >= philo->time[BE_FULL])
-		{
-			put_status(philo, MAGENTA, FULL, 0);
-			return (FAIL);
-		}
+		//philo->time[SUM_EAT] += philo->time[TO_EAT];
+		//if (philo->time[SUM_EAT] >= philo->times_must_eat)
+		//{
+		//	put_status(philo, MAGENTA, FULL, 0);
+		//	return (FAIL);
+		//}
 		return (SUCCESS);
 	}
 	else
