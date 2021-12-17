@@ -99,8 +99,8 @@ typedef struct s_thread_data
 **  philos:		philos[i] has data of No.(i+1) philosopher(thread).
 **  monitors:	monitors[i] has data of No.(i+1) philosopher's monitor(thread).
 **  forks:		mutex for eating action. forks[i] is shared by philos[i] <-> philos[i+1].
-**  last_eat:	mutex for access to time_last_eat(each thread's member)
-**				last_eat[i] is shared by philos[i] <-> monitors[i].
+**  ate:	mutex for access to time_last_eat(each thread's member)
+**				ate[i] is shared by philos[i] <-> monitors[i].
 **  put:		mutex for use to put_status(). is shared by all threads.
 **  life:		mutex for access to life_flag. is shared by all threads.
 */
@@ -113,7 +113,7 @@ typedef struct s_manage_data
 	t_thread_data	*philos;
 	t_thread_data	*monitors;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t	*last_eat;
+	pthread_mutex_t	*ate;
 	pthread_mutex_t	put;
 	pthread_mutex_t	life;
 }	t_manage_data;

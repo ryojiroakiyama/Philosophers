@@ -29,7 +29,7 @@ t_status	run_thread(t_manage_data *mdata)
 		a_philo = mdata->philos + philo_index;
 		pthread_join(a_philo->thread_id, NULL);
 		pthread_mutex_destroy(mdata->forks + philo_index);
-		pthread_mutex_destroy(mdata->last_eat + philo_index);
+		pthread_mutex_destroy(mdata->ate + philo_index);
 	}
 	pthread_mutex_destroy(&(mdata->put));
 	pthread_mutex_destroy(&(mdata->life));
@@ -43,14 +43,14 @@ static void	handle_memory(t_manage_data *mdata, t_memory mode)
 		mdata->philos = NULL;
 		mdata->monitors = NULL;
 		mdata->forks = NULL;
-		mdata->last_eat = NULL;
+		mdata->ate = NULL;
 	}
 	else if (mode == FREE)
 	{
 		free(mdata->philos);
 		free(mdata->monitors);
 		free(mdata->forks);
-		free(mdata->last_eat);
+		free(mdata->ate);
 	}
 }
 

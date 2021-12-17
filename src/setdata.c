@@ -29,9 +29,9 @@ t_status	set_manage_data(t_manage_data *mdata, long options[OPTION_NUM])
 	mdata->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->philo_num);
 	if (!mdata->forks)
 		return (put_error("malloc for fork mutex"));
-	mdata->last_eat = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->philo_num);
-	if (!mdata->last_eat)
-		return (put_error("malloc for last_eat mutex"));
+	mdata->ate = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->philo_num);
+	if (!mdata->ate)
+		return (put_error("malloc for ate mutex"));
 	return (SUCCESS);
 }
 
@@ -56,7 +56,7 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, in
 	philo->mutex[RIGHT_FORK] = mdata->forks + philo_index;
 	philo->mutex[LEFT_FORK] = mdata->forks + ((philo_index + 1) % mdata->philo_num);
 	philo->mutex[TO_PUT] = &(mdata->put);
-	philo->mutex[TO_LAST_EAT] = mdata->last_eat + philo_index;
+	philo->mutex[TO_LAST_EAT] = mdata->ate + philo_index;
 	philo->mutex[TO_LIFE_FLAG] = &(mdata->life);
 	philo->time_last_eat = &(philo->time[LAST_EAT]);
 	philo->monitor = mdata->monitors + philo_index;
@@ -89,7 +89,7 @@ t_status	set_thread_data(t_manage_data *mdata)
 		set_thread_data_philo(mdata, a_philo, philo_index);
 		set_thread_data_monitor(a_philo, a_philo->monitor);
 		pthread_mutex_init(mdata->forks + philo_index, NULL);
-		pthread_mutex_init(mdata->last_eat + philo_index, NULL);
+		pthread_mutex_init(mdata->ate + philo_index, NULL);
 	}
 	pthread_mutex_init(&(mdata->put), NULL);
 	pthread_mutex_init(&(mdata->life), NULL);
