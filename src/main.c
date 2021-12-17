@@ -1,13 +1,5 @@
 #include "philo.h"
 
-// for handle memory
-typedef enum e_memory
-{
-	INIT,
-	FREE,
-	MEMORY_NUM
-}	t_memory;
-
 t_status	run_thread(t_manage_data *mdata)
 {
 	t_thread_data	*a_philo;
@@ -36,22 +28,16 @@ t_status	run_thread(t_manage_data *mdata)
 	return (SUCCESS);
 }
 
-static void	handle_memory(t_manage_data *mdata, t_memory mode)
+static void	free_memory(t_manage_data *mdata)
 {
-	if (mode == INIT)
-	{
-		mdata->philos = NULL;
-		mdata->monitors = NULL;
-		mdata->forks = NULL;
-		mdata->ate = NULL;
-	}
-	else if (mode == FREE)
-	{
+	if (mdata->philos)
 		free(mdata->philos);
+	if (mdata->monitors)
 		free(mdata->monitors);
+	if (mdata->forks)
 		free(mdata->forks);
+	if (mdata->ate)
 		free(mdata->ate);
-	}
 }
 
 /*
@@ -92,7 +78,10 @@ int	main(int argc, char *argv[])
 
 	if (!(argc == 5 || argc == 6))
 		return (put_arg_error("number of arguments"));
-	handle_memory(&mdata, INIT);
+	mdata.philos = NULL;
+	mdata.monitors = NULL;
+	mdata.forks = NULL;
+	mdata.ate = NULL;
 	if (get_options(argc, argv, options) == SUCCESS && \
 		set_manage_data(&mdata, options) == SUCCESS && \
 		set_thread_data(&mdata) == SUCCESS && \
@@ -100,8 +89,6 @@ int	main(int argc, char *argv[])
 			return_status = SUCCESS;
 	else
 		return_status = FAIL;
-	handle_memory(&mdata, FREE);
-	// if (system("leaks philo >/dev/null"))
-	// 	system("leaks philo");
+	free_memory(&mdata);
 	return (return_status);
 }
