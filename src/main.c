@@ -66,6 +66,8 @@ int	main(int argc, char *argv[])
 	mdata.monitors = NULL;
 	mdata.forks = NULL;
 	mdata.ate = NULL;
+	mdata.put = NULL;
+	mdata.life = NULL;
 	if (get_options(argc, argv, options) == SUCCESS && \
 		set_mdata_num(&mdata, options) == SUCCESS && \
 		set_mdata_mem(&mdata) == SUCCESS && \

@@ -114,8 +114,8 @@ typedef struct s_manage_data
 	t_thread_data	*monitors;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*ate;
-	pthread_mutex_t	put;
-	pthread_mutex_t	life;
+	pthread_mutex_t	*put;
+	pthread_mutex_t	*life;
 }	t_manage_data;
 
 // lib.c

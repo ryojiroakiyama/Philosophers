@@ -21,12 +21,6 @@ static t_status handle_mutex(pthread_mutex_t *mutex, int len, int (*f)(pthread_m
 
 t_status	set_mdata_mem(t_manage_data *mdata)
 {
-	memset(&(mdata->put), 0, sizeof(pthread_mutex_t));
-	memset(&(mdata->life), 0, sizeof(pthread_mutex_t));
-	if (handle_mutex(&(mdata->put), 1, wrap_mutex_init) == FAIL)
-		return (put_error("init put mutex"));
-	if (handle_mutex(&(mdata->life), 1, wrap_mutex_init) == FAIL)
-		return (put_error("init life mutex"));
 	mdata->philos = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->philo_num);
 	if (!mdata->philos)
 		return (put_error("malloc for philo thread"));
@@ -51,6 +45,24 @@ t_status	set_mdata_mem(t_manage_data *mdata)
 	}
 	else
 		return (put_error("malloc for ate mutex"));
+	mdata->put = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * 1);
+	if (mdata->put)
+	{
+		memset(mdata->put, 0, sizeof(pthread_mutex_t) * 1);
+		if (handle_mutex(mdata->put, 1, wrap_mutex_init) == FAIL)
+			return (put_error("init put mutex"));
+	}
+	else
+		return (put_error("malloc for put mutex"));
+	mdata->life = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * 1);
+	if (mdata->life)
+	{
+		memset(mdata->life, 0, sizeof(pthread_mutex_t) * 1);
+		if (handle_mutex(mdata->life, 1, wrap_mutex_init) == FAIL)
+			return (put_error("init life mutex"));
+	}
+	else
+		return (put_error("malloc for life mutex"));
 	return (SUCCESS);
 }
 
@@ -72,6 +84,16 @@ void	free_memory(t_manage_data *mdata)
 			put_error("destory");
 		free(mdata->ate);
 	}
-	pthread_mutex_destroy(&(mdata->put));
-	pthread_mutex_destroy(&(mdata->life));
+	if (mdata->put)
+	{
+		if (handle_mutex(mdata->put, 1, pthread_mutex_destroy) == FAIL)
+			put_error("destory");
+		free(mdata->put);
+	}
+	if (mdata->life)
+	{
+		if (handle_mutex(mdata->life, 1, pthread_mutex_destroy) == FAIL)
+			put_error("destory");
+		free(mdata->life);
+	}
 }
