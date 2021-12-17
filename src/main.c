@@ -83,7 +83,8 @@ int	main(int argc, char *argv[])
 	mdata.forks = NULL;
 	mdata.ate = NULL;
 	if (get_options(argc, argv, options) == SUCCESS && \
-		set_manage_data(&mdata, options) == SUCCESS && \
+		set_mdata_num(&mdata, options) == SUCCESS && \
+		set_mdata_mem(&mdata) == SUCCESS && \
 		set_thread_data(&mdata) == SUCCESS && \
 		run_thread(&mdata) == SUCCESS)
 			return_status = SUCCESS;

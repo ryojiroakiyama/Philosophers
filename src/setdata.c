@@ -1,6 +1,6 @@
 #include "philo.h"
 
-static void	set_options(t_manage_data *mdata, long options[OPTION_NUM])
+t_status	set_mdata_num(t_manage_data *mdata, long options[OPTION_NUM])
 {
 	t_time	idx_time;
 
@@ -14,12 +14,12 @@ static void	set_options(t_manage_data *mdata, long options[OPTION_NUM])
 			mdata->time[idx_time] = options[idx_time + 1];
 		idx_time++;
 	}
+	mdata->life_flag = NO_ONE_DIED;
+	return (SUCCESS);
 }
 
-t_status	set_manage_data(t_manage_data *mdata, long options[OPTION_NUM])
+t_status	set_mdata_mem(t_manage_data *mdata)
 {
-	set_options(mdata, options);
-	mdata->life_flag = NO_ONE_DIED;
 	mdata->philos = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->philo_num);
 	if (!mdata->philos)
 		return (put_error("malloc for philo thread"));
