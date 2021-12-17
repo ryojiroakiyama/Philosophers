@@ -18,8 +18,28 @@ t_status	set_mdata_num(t_manage_data *mdata, long options[OPTION_NUM])
 	return (SUCCESS);
 }
 
+static t_status init_mutex(pthread_mutex_t *mutex, int len)
+{
+	int	idx;
+
+	idx = 0;
+	while (idx < len)
+	{
+		if (pthread_mutex_init(mutex + idx, NULL))
+			return (FAIL);
+		idx++;
+	}
+	return (SUCCESS);
+}
+
 t_status	set_mdata_mem(t_manage_data *mdata)
 {
+	memset(&(mdata->put), 0, sizeof(pthread_mutex_t));
+	memset(&(mdata->life), 0, sizeof(pthread_mutex_t));
+	if (init_mutex(&(mdata->put), 1) == FAIL)
+		return (put_error("init put mutex"));
+	if (init_mutex(&(mdata->life), 1) == FAIL)
+		return (put_error("init life mutex"));
 	mdata->philos = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->philo_num);
 	if (!mdata->philos)
 		return (put_error("malloc for philo thread"));
@@ -27,10 +47,22 @@ t_status	set_mdata_mem(t_manage_data *mdata)
 	if (!mdata->monitors)
 		return (put_error("malloc for monitor thread"));
 	mdata->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->philo_num);
-	if (!mdata->forks)
+	if (mdata->forks)
+	{
+		memset(mdata->forks, 0, sizeof(pthread_mutex_t) * mdata->philo_num);
+		if (init_mutex(mdata->forks, mdata->philo_num) == FAIL)
+			return (put_error("init forks mutex"));
+	}
+	else
 		return (put_error("malloc for fork mutex"));
 	mdata->ate = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * mdata->philo_num);
-	if (!mdata->ate)
+	if (mdata->ate)
+	{
+		memset(mdata->ate, 0, sizeof(pthread_mutex_t) * mdata->philo_num);
+		if (init_mutex(mdata->ate, mdata->philo_num) == FAIL)
+			return (put_error("init ate mutex"));
+	}
+	else
 		return (put_error("malloc for ate mutex"));
 	return (SUCCESS);
 }
@@ -77,20 +109,6 @@ static void	set_thread_data_monitor(t_thread_data *philo, t_thread_data *monitor
 	monitor->monitor = NULL;
 }
 
-static t_status init_mutex(pthread_mutex_t *mutex, int len)
-{
-	int	idx;
-
-	idx = 0;
-	while (idx < len)
-	{
-		if (pthread_mutex_init(mutex + idx, NULL))
-			return (FAIL);
-		idx++;
-	}
-	return (SUCCESS);
-}
-
 t_status	set_thread_data(t_manage_data *mdata)
 {
 	t_thread_data	*a_philo;
@@ -103,14 +121,6 @@ t_status	set_thread_data(t_manage_data *mdata)
 		set_thread_data_philo(mdata, a_philo, philo_index);
 		set_thread_data_monitor(a_philo, a_philo->monitor);
 	}
-	memset(mdata->forks, 0, sizeof(pthread_mutex_t) * mdata->philo_num);
-	init_mutex(mdata->forks, mdata->philo_num);
-	memset(mdata->ate, 0, sizeof(pthread_mutex_t) * mdata->philo_num);
-	init_mutex(mdata->ate, mdata->philo_num);
-	memset(&(mdata->put), 0, sizeof(pthread_mutex_t));
-	init_mutex(&(mdata->put), 1);
-	memset(&(mdata->life), 0, sizeof(pthread_mutex_t));
-	init_mutex(&(mdata->life), 1);
 	//philo_index = 0;
 	//while (philo_index < 5)
 	//{
