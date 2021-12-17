@@ -84,7 +84,6 @@ static t_status init_mutex(pthread_mutex_t *mutex, int len)
 	idx = 0;
 	while (idx < len)
 	{
-		printf("%d\n", idx);
 		if (pthread_mutex_init(mutex + idx, NULL))
 			return (FAIL);
 		idx++;
@@ -103,15 +102,15 @@ t_status	set_thread_data(t_manage_data *mdata)
 		a_philo = mdata->philos + philo_index;
 		set_thread_data_philo(mdata, a_philo, philo_index);
 		set_thread_data_monitor(a_philo, a_philo->monitor);
-		//pthread_mutex_init(mdata->forks + philo_index, NULL);
-		//pthread_mutex_init(mdata->ate + philo_index, NULL);
 	}
+	memset(mdata->forks, 0, sizeof(pthread_mutex_t) * mdata->philo_num);
 	init_mutex(mdata->forks, mdata->philo_num);
+	memset(mdata->ate, 0, sizeof(pthread_mutex_t) * mdata->philo_num);
 	init_mutex(mdata->ate, mdata->philo_num);
+	memset(&(mdata->put), 0, sizeof(pthread_mutex_t));
 	init_mutex(&(mdata->put), 1);
+	memset(&(mdata->life), 0, sizeof(pthread_mutex_t));
 	init_mutex(&(mdata->life), 1);
-	//pthread_mutex_init(&(mdata->put), NULL);
-	//pthread_mutex_init(&(mdata->life), NULL);
 	//philo_index = 0;
 	//while (philo_index < 5)
 	//{
