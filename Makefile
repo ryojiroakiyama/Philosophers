@@ -8,7 +8,8 @@ SRCNAME	=	main.c \
 			lib.c \
 			put.c \
 			thread.c \
-			setdata.c
+			setdata.c \
+			memory.c
 SRCS	= $(addprefix $(SRCDIR)/, $(SRCNAME))
 
 OBJDIR	= ./obj

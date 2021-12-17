@@ -28,18 +28,6 @@ t_status	run_thread(t_manage_data *mdata)
 	return (SUCCESS);
 }
 
-static void	free_memory(t_manage_data *mdata)
-{
-	if (mdata->philos)
-		free(mdata->philos);
-	if (mdata->monitors)
-		free(mdata->monitors);
-	if (mdata->forks)
-		free(mdata->forks);
-	if (mdata->ate)
-		free(mdata->ate);
-}
-
 /*
 **  argv[1] options[0]: number_of_philosophers, int
 **      [2]        [1]: time_to_die, long
