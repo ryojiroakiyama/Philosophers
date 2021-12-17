@@ -26,13 +26,17 @@ void	put_thread_data(t_thread_data *pdata)
 
 t_status	put_error(char *message)
 {
-	printf("error: %s\n", message);
+	ft_putstr_fd("error: ", STDERR_FILENO);
+	ft_putstr_fd(message, STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
 	return (FAIL);
 }
 
 t_status	put_arg_error(char *message)
 {
-	printf("error: %s\n", message);
+	ft_putstr_fd("error: ", STDERR_FILENO);
+	ft_putstr_fd(message, STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
 	printf("type and order of arguments required:\n");
 	printf("1: philo_num\n");
 	printf("2: time_to_die\n");

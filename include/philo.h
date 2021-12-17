@@ -121,6 +121,8 @@ typedef struct s_manage_data
 // lib.c
 long		ft_atol(char *str, bool *is_valid);
 int			ft_atoi(char *str, bool *is_valid);
+void		ft_putstr_fd(char *s, int fd);
+
 
 // put.c
 void		put_manage_data(t_manage_data *mdata);

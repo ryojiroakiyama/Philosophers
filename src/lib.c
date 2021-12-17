@@ -1,5 +1,22 @@
 #include "philo.h"
 
+static size_t	ft_strlen(const char *s)
+{
+	size_t	i;
+
+	i = 0;
+	while (s[i])
+		i++;
+	return (i);
+}
+
+void	ft_putstr_fd(char *s, int fd)
+{
+	if (!s)
+		return ;
+	write(fd, s, ft_strlen(s));
+}
+
 static bool	is_overflow(unsigned long num, \
 		int sign, bool *invalid, long max)
 {

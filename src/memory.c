@@ -61,7 +61,17 @@ void	free_memory(t_manage_data *mdata)
 	if (mdata->monitors)
 		free(mdata->monitors);
 	if (mdata->forks)
+	{
+		if (handle_mutex(mdata->forks, mdata->philo_num, pthread_mutex_destroy) == FAIL)
+			put_error("destroy");
 		free(mdata->forks);
+	}
 	if (mdata->ate)
+	{
+		if (handle_mutex(mdata->ate, mdata->philo_num, pthread_mutex_destroy) == FAIL)
+			put_error("destory");
 		free(mdata->ate);
+	}
+	pthread_mutex_destroy(&(mdata->put));
+	pthread_mutex_destroy(&(mdata->life));
 }

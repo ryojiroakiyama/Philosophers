@@ -20,11 +20,7 @@ t_status	run_thread(t_manage_data *mdata)
 	{
 		a_philo = mdata->philos + philo_index;
 		pthread_join(a_philo->thread_id, NULL);
-		pthread_mutex_destroy(mdata->forks + philo_index);
-		pthread_mutex_destroy(mdata->ate + philo_index);
 	}
-	pthread_mutex_destroy(&(mdata->put));
-	pthread_mutex_destroy(&(mdata->life));
 	return (SUCCESS);
 }
 
