@@ -18,14 +18,19 @@ t_status	set_mdata_num(t_manage_data *mdata, long options[OPTION_NUM])
 	return (SUCCESS);
 }
 
-static t_status init_mutex(pthread_mutex_t *mutex, int len)
+static int	wrap_mutex_init(pthread_mutex_t *mutex)
+{
+	return pthread_mutex_init(mutex, NULL);
+}
+
+static t_status handle_mutex(pthread_mutex_t *mutex, int len, int (*f)(pthread_mutex_t *))
 {
 	int	idx;
 
 	idx = 0;
 	while (idx < len)
 	{
-		if (pthread_mutex_init(mutex + idx, NULL))
+		if (f(mutex + idx))
 			return (FAIL);
 		idx++;
 	}
@@ -36,9 +41,9 @@ t_status	set_mdata_mem(t_manage_data *mdata)
 {
 	memset(&(mdata->put), 0, sizeof(pthread_mutex_t));
 	memset(&(mdata->life), 0, sizeof(pthread_mutex_t));
-	if (init_mutex(&(mdata->put), 1) == FAIL)
+	if (handle_mutex(&(mdata->put), 1, wrap_mutex_init) == FAIL)
 		return (put_error("init put mutex"));
-	if (init_mutex(&(mdata->life), 1) == FAIL)
+	if (handle_mutex(&(mdata->life), 1, wrap_mutex_init) == FAIL)
 		return (put_error("init life mutex"));
 	mdata->philos = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->philo_num);
 	if (!mdata->philos)
@@ -50,7 +55,7 @@ t_status	set_mdata_mem(t_manage_data *mdata)
 	if (mdata->forks)
 	{
 		memset(mdata->forks, 0, sizeof(pthread_mutex_t) * mdata->philo_num);
-		if (init_mutex(mdata->forks, mdata->philo_num) == FAIL)
+		if (handle_mutex(mdata->forks, mdata->philo_num, wrap_mutex_init) == FAIL)
 			return (put_error("init forks mutex"));
 	}
 	else
@@ -59,7 +64,7 @@ t_status	set_mdata_mem(t_manage_data *mdata)
 	if (mdata->ate)
 	{
 		memset(mdata->ate, 0, sizeof(pthread_mutex_t) * mdata->philo_num);
-		if (init_mutex(mdata->ate, mdata->philo_num) == FAIL)
+		if (handle_mutex(mdata->ate, mdata->philo_num, wrap_mutex_init) == FAIL)
 			return (put_error("init ate mutex"));
 	}
 	else
