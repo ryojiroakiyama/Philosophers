@@ -51,15 +51,7 @@ t_status	philo_eat(t_thread_data *philo)
 	access_time_last_eat(philo, EDIT);
 	status = put_status(philo, GREEN, EAT, 0);
 	if (status == SUCCESS)
-	{
 		xsleep(philo->time[TO_EAT] * 1000);
-		//philo->time[SUM_EAT] += philo->time[TO_EAT];
-		//if (philo->time[SUM_EAT] >= philo->times_must_eat)
-		//{
-		//	put_status(philo, MAGENTA, FULL, 0);
-		//	return (FAIL);
-		//}
-	}
 	pthread_mutex_unlock(philo->mutex[RIGHT_FORK]);
 	pthread_mutex_unlock(philo->mutex[LEFT_FORK]);
 	return (status);
@@ -98,7 +90,7 @@ void	*monitor_action(void *data)
 			put_status(monitor, RED, DIE, 1);
 			break ;
 		}
-		xsleep(10000);
+		xsleep(INTERVAL);
 	}
 	return (data);
 }

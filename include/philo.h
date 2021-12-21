@@ -13,7 +13,7 @@
 # define SLEEP "sleeping"
 # define THINK "thinking"
 # define DIE "died"
-# define FULL "is full"
+# define FULL "full"
 
 // color settings
 # define RED "\033[31m"
@@ -26,8 +26,8 @@
 # define MAGENTA "\033[35m"
 # define RESET "\033[0m"
 
-// option
 # define UNSPECIFIED -1
+# define INTERVAL 10000
 
 // status some one died or not
 typedef enum e_life
@@ -84,7 +84,6 @@ typedef struct s_thread_data
 {
 	pthread_t				thread_id;
 	int						order;
-	int						times_ate;
 	int						times_must_eat;
 	long					time[TIME_NUM];
 	pthread_mutex_t			*mutex[MUTEX_NUM];

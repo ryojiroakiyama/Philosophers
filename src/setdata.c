@@ -33,7 +33,6 @@ static void copy_array(long original[], long copy[], int size)
 static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, int philo_index)
 {
 	philo->order = philo_index + 1;
-	philo->times_ate = 0;
 	philo->times_must_eat = mdata->times_must_eat;
 	copy_array(mdata->time, philo->time, TIME_NUM);
 	philo->life_flag = &(mdata->life_flag);
@@ -49,7 +48,6 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, in
 static void	set_thread_data_monitor(t_thread_data *philo, t_thread_data *monitor)
 {
 	monitor->order = philo->order;
-	monitor->times_ate = philo->times_ate;
 	monitor->times_must_eat = philo->times_must_eat;
 	copy_array(philo->time, monitor->time, TIME_NUM);
 	monitor->mutex[RIGHT_FORK] = NULL;
