@@ -44,8 +44,13 @@ t_status	put_status(t_thread_data *thread, char *color, char *message, char to_d
 
 t_status	philo_eat(t_thread_data *philo)
 {
+	t_status	status;
+
+	pthread_mutex_lock(philo->mutex[RIGHT_FORK]);
+	pthread_mutex_lock(philo->mutex[LEFT_FORK]);
 	access_time_last_eat(philo, EDIT);
-	if (put_status(philo, GREEN, EAT, 0) == SUCCESS)
+	status = put_status(philo, GREEN, EAT, 0);
+	if (status == SUCCESS)
 	{
 		do_usleep(philo->time[TO_EAT] * 1000);
 		//philo->time[SUM_EAT] += philo->time[TO_EAT];
@@ -54,29 +59,27 @@ t_status	philo_eat(t_thread_data *philo)
 		//	put_status(philo, MAGENTA, FULL, 0);
 		//	return (FAIL);
 		//}
-		return (SUCCESS);
 	}
-	else
-		return (FAIL);
+	pthread_mutex_unlock(philo->mutex[RIGHT_FORK]);
+	pthread_mutex_unlock(philo->mutex[LEFT_FORK]);
+	return (status);
 }
 
 t_status	philo_sleep(t_thread_data *philo)
 {
-	if (put_status(philo, BLUE, SLEEP, 0) == SUCCESS)
-	{
+	t_status	status;
+	status = put_status(philo, BLUE, SLEEP, 0);
+	if (status == SUCCESS)
 		do_usleep(philo->time[TO_SLEEP] * 1000);
-		return (SUCCESS);
-	}
-	else
-		return (FAIL);
+	return (status);
 }
 
 t_status	philo_think(t_thread_data *philo)
 {
-	if (put_status(philo, CYAN, THINK, 0) == SUCCESS)
-		return (SUCCESS);
-	else
-		return (FAIL);
+	t_status	status;
+
+	status = put_status(philo, CYAN, THINK, 0);
+	return (status);
 }
 
 void	*monitor_action(void *data)
@@ -115,11 +118,7 @@ void	*philo_action(void *data)
 	status = SUCCESS;
 	while (status == SUCCESS)
 	{
-		pthread_mutex_lock(philo->mutex[RIGHT_FORK]);
-		pthread_mutex_lock(philo->mutex[LEFT_FORK]);
 		status = philo_eat(philo);
-		pthread_mutex_unlock(philo->mutex[RIGHT_FORK]);
-		pthread_mutex_unlock(philo->mutex[LEFT_FORK]);
 		if (status == SUCCESS)// necessary to end by philo be FULL.
 			status =  philo_sleep(philo);
 		if (status == SUCCESS)
