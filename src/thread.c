@@ -103,12 +103,12 @@ void	*monitor_action(void *data)
 void	*philo_action(void *data)
 {
 	t_thread_data	*philo;
-	t_thread_data	*minimoni;
+	t_thread_data	*monitor;
 	t_status		status;
 
 	philo = (t_thread_data *)data;
-	minimoni = philo->monitor;
-	pthread_create(&(minimoni->thread_id), NULL, &monitor_action, minimoni);
+	monitor = philo->monitor;
+	pthread_create(&(monitor->thread_id), NULL, &monitor_action, monitor);
 	if (philo->order % 2 == 1)
 		do_usleep(200);
 	status = SUCCESS;
@@ -124,6 +124,7 @@ void	*philo_action(void *data)
 		if (status == SUCCESS)
 			status = philo_think(philo);
 	}
-	pthread_join(minimoni->thread_id, NULL);
+	if (pthread_join(monitor->thread_id, NULL))
+		put_error("pthread_join monitor");
 	return (data);
 }

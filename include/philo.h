@@ -149,6 +149,8 @@ t_status	set_thread_data(t_manage_data *mdata);
 t_status	run_thread(t_manage_data *mdata);
 
 // memory.c
-void	free_memory(t_manage_data *mdata);
+void		free_memory(t_manage_data *mdata);
+
+// wrap.c
 
 #endif
