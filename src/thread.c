@@ -108,7 +108,8 @@ void	*philo_action(void *data)
 
 	philo = (t_thread_data *)data;
 	monitor = philo->monitor;
-	pthread_create(&(monitor->thread_id), NULL, &monitor_action, monitor);
+	if (xthread_create(&(monitor->thread_id), &monitor_action, monitor, "for monitor"))
+		return(data);
 	if (philo->order % 2 == 1)
 		do_usleep(200);
 	status = SUCCESS;
@@ -124,7 +125,6 @@ void	*philo_action(void *data)
 		if (status == SUCCESS)
 			status = philo_think(philo);
 	}
-	if (pthread_join(monitor->thread_id, NULL))
-		put_error("pthread_join monitor");
+	xthread_join(monitor->thread_id, "for monitor");
 	return (data);
 }

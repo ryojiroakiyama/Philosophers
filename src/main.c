@@ -14,14 +14,12 @@ t_status	run_thread(t_manage_data *mdata)
 	{
 		a_philo = mdata->philos + philo_index;
 		a_philo->time[LAST_EAT] = time_start;
-		if (pthread_create(&(a_philo->thread_id), NULL, &philo_action, a_philo))
-			put_error("pthread_create");
+		xthread_create(&(a_philo->thread_id), &philo_action, a_philo, "for philo");
 	}
 	while (++philo_index < mdata->philo_num)
 	{
 		a_philo = mdata->philos + philo_index;
-		if (pthread_join(a_philo->thread_id, NULL))
-			put_error("pthread_join");
+		xthread_join(a_philo->thread_id, "for philo");
 	}
 	return (SUCCESS);
 }

@@ -119,8 +119,6 @@ typedef struct s_manage_data
 }	t_manage_data;
 
 // lib.c
-void		do_usleep(useconds_t microseconds);
-long		gettimeofday_mili();
 long		ft_atol(char *str, bool *is_valid);
 int			ft_atoi(char *str, bool *is_valid);
 void		ft_putstr_fd(char *s, int fd);
@@ -152,5 +150,9 @@ t_status	run_thread(t_manage_data *mdata);
 void		free_memory(t_manage_data *mdata);
 
 // wrap.c
+void		do_usleep(useconds_t microseconds);
+long		gettimeofday_mili();
+int			xthread_create(pthread_t *thread, void *(*start_routine)(void *), void *arg, char *message);
+int 		xthread_join(pthread_t thread, char *message);
 
 #endif

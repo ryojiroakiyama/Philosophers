@@ -42,3 +42,17 @@ int xthread_create
 	}
 	return (ret);
 }
+
+int xthread_join(pthread_t thread, char *message)
+{
+	int ret;
+
+	ret = pthread_join(thread, NULL);
+	if (ret)
+	{
+		ft_putstr_fd("error: pthread_join: ", STDERR_FILENO);
+		ft_putstr_fd(message, STDERR_FILENO);
+		ft_putstr_fd("\n", STDERR_FILENO);
+	}
+	return (ret);
+}
