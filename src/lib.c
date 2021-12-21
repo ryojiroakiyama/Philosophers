@@ -1,6 +1,22 @@
 #include "philo.h"
 
-long	gettimeofday_milisecond()
+void	do_usleep(useconds_t microseconds)
+{
+	long		endtime;
+	useconds_t	lefttime;
+
+	endtime = getmilitimeofday() + microseconds / 1000;
+	while (TRUE)
+	{
+		lefttime = (endtime - getmilitimeofday()) * 1000;
+		if (lefttime > 0)
+			usleep(lefttime / 2);
+		else
+			break;
+	}
+}
+
+long	getmilitimeofday()
 {
 	struct timeval 	tv;
 

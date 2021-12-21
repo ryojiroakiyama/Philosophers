@@ -18,7 +18,7 @@ long	access_time_last_eat(t_thread_data *thread, t_access mode)
 
 	pthread_mutex_lock(thread->mutex[TO_LAST_EAT]);
 	if (mode == EDIT)
- 		*(thread->time_last_eat) = gettimeofday_milisecond();
+ 		*(thread->time_last_eat) = getmilitimeofday();
 	result = *(thread->time_last_eat);
 	pthread_mutex_unlock(thread->mutex[TO_LAST_EAT]);
 	return (result);
@@ -33,7 +33,7 @@ t_status	put_status(t_thread_data *thread, char *color, char *message, char to_d
 	{
 		if (to_die)
 			access_life_flag(thread, EDIT);
-		printf("%s%ld %d is %s\n%s", color, gettimeofday_milisecond(), thread->order, message, RESET);
+		printf("%s%ld %d is %s\n%s", color, getmilitimeofday(), thread->order, message, RESET);
 		status = SUCCESS;
 	}
 	else
@@ -47,7 +47,7 @@ t_status	philo_eat(t_thread_data *philo)
 	access_time_last_eat(philo, EDIT);
 	if (put_status(philo, GREEN, EAT, 0) == SUCCESS)
 	{
-		usleep(philo->time[TO_EAT] * 1000);
+		do_usleep(philo->time[TO_EAT] * 1000);
 		//philo->time[SUM_EAT] += philo->time[TO_EAT];
 		//if (philo->time[SUM_EAT] >= philo->times_must_eat)
 		//{
@@ -64,7 +64,7 @@ t_status	philo_sleep(t_thread_data *philo)
 {
 	if (put_status(philo, BLUE, SLEEP, 0) == SUCCESS)
 	{
-		usleep(philo->time[TO_SLEEP] * 1000);
+		do_usleep(philo->time[TO_SLEEP] * 1000);
 		return (SUCCESS);
 	}
 	else
@@ -89,13 +89,13 @@ void	*monitor_action(void *data)
 	while (1)
 	{
 		time_last_eat = access_time_last_eat(monitor, READ);
-		time_now = gettimeofday_milisecond();
+		time_now = getmilitimeofday();
 		if (time_now - time_last_eat > monitor->time[TO_DIE])
 		{
 			put_status(monitor, RED, DIE, 1);
 			break ;
 		}
-		usleep(10000);
+		do_usleep(10000);
 	}
 	return (data);
 }
@@ -110,7 +110,7 @@ void	*philo_action(void *data)
 	minimoni = philo->monitor;
 	pthread_create(&(minimoni->thread_id), NULL, &monitor_action, minimoni);
 	if (philo->order % 2 == 1)
-		usleep(200);
+		do_usleep(200);
 	status = SUCCESS;
 	while (status == SUCCESS)
 	{

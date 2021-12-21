@@ -119,6 +119,8 @@ typedef struct s_manage_data
 }	t_manage_data;
 
 // lib.c
+void		do_usleep(useconds_t microseconds);
+long		getmilitimeofday();
 long		ft_atol(char *str, bool *is_valid);
 int			ft_atoi(char *str, bool *is_valid);
 void		ft_putstr_fd(char *s, int fd);
@@ -131,7 +133,6 @@ t_status	put_error(char *message);
 t_status	put_arg_error(char *message);
 
 // thread
-long		gettimeofday_milisecond();
 t_life		access_life_flag(t_thread_data *thread, t_access mode);
 long		access_time_last_eat(t_thread_data *thread, t_access mode);
 t_status	put_status(t_thread_data *thread, char *color, char *message, char to_die);

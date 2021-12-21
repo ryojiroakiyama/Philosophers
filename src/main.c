@@ -6,7 +6,7 @@ t_status	run_thread(t_manage_data *mdata)
 	int				philo_index;
 	long			time_start;
 
-	time_start = gettimeofday_milisecond();
+	time_start = getmilitimeofday();
 	if (time_start == -1)
 		return (FAIL);
 	philo_index = mdata->philo_num;
