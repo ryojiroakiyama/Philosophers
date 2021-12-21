@@ -1,6 +1,6 @@
 #include "philo.h"
 
-void	do_usleep(useconds_t microseconds)
+void	xsleep(useconds_t microseconds)
 {
 	long		endtime;
 	useconds_t	lefttime;

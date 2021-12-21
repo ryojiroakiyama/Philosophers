@@ -52,7 +52,7 @@ t_status	philo_eat(t_thread_data *philo)
 	status = put_status(philo, GREEN, EAT, 0);
 	if (status == SUCCESS)
 	{
-		do_usleep(philo->time[TO_EAT] * 1000);
+		xsleep(philo->time[TO_EAT] * 1000);
 		//philo->time[SUM_EAT] += philo->time[TO_EAT];
 		//if (philo->time[SUM_EAT] >= philo->times_must_eat)
 		//{
@@ -70,7 +70,7 @@ t_status	philo_sleep(t_thread_data *philo)
 	t_status	status;
 	status = put_status(philo, BLUE, SLEEP, 0);
 	if (status == SUCCESS)
-		do_usleep(philo->time[TO_SLEEP] * 1000);
+		xsleep(philo->time[TO_SLEEP] * 1000);
 	return (status);
 }
 
@@ -98,7 +98,7 @@ void	*monitor_action(void *data)
 			put_status(monitor, RED, DIE, 1);
 			break ;
 		}
-		do_usleep(10000);
+		xsleep(10000);
 	}
 	return (data);
 }
@@ -114,12 +114,12 @@ void	*philo_action(void *data)
 	if (xthread_create(&(monitor->thread_id), &monitor_action, monitor, "for monitor"))
 		return(data);
 	if (philo->order % 2 == 1)
-		do_usleep(200);
+		xsleep(200);
 	status = SUCCESS;
 	while (status == SUCCESS)
 	{
 		status = philo_eat(philo);
-		if (status == SUCCESS)// necessary to end by philo be FULL.
+		if (status == SUCCESS)
 			status =  philo_sleep(philo);
 		if (status == SUCCESS)
 			status = philo_think(philo);

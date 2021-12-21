@@ -6,7 +6,7 @@
 /*   By: rakiyama <ryojiro25@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 20:19:03 by rakiyama          #+#    #+#             */
-/*   Updated: 2021/12/21 19:21:23 by rakiyama         ###   ########.fr       */
+/*   Updated: 2021/12/21 20:23:00 by rakiyama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ long	gettimeofday_mili()
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-void	do_usleep(useconds_t microseconds)
+void	xsleep(useconds_t microseconds)
 {
 	long		endtime;
 	useconds_t	lefttime;
@@ -47,7 +47,7 @@ int main(void)
 	//usleep(sleeptime);
 	//printf("diff: %ld\n", gettimeofday_mili() - starttime);
 	//starttime = gettimeofday_mili();
-	do_usleep(sleeptime);
+	xsleep(sleeptime);
 	printf("diff: %ld\n", gettimeofday_mili() - starttime);
 	return (0);
 }
