@@ -77,7 +77,6 @@ typedef enum e_time
 	TO_EAT,
 	TO_SLEEP,
 	LAST_EAT,
-	SUM_EAT,
 	TIME_NUM
 }	t_time;
 
@@ -85,6 +84,7 @@ typedef struct s_thread_data
 {
 	pthread_t				thread_id;
 	int						order;
+	int						times_ate;
 	int						times_must_eat;
 	long					time[TIME_NUM];
 	pthread_mutex_t			*mutex[MUTEX_NUM];

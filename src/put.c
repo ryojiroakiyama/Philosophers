@@ -19,7 +19,6 @@ void	put_thread_data(t_thread_data *pdata)
 	printf("time[TO_EAT]     %ld\n", pdata->time[TO_EAT]);
 	printf("time[TO_SLEEP]   %ld\n", pdata->time[TO_SLEEP]);
 	printf("time[LAST_EAT    %ld\n", pdata->time[LAST_EAT]);
-	printf("time[SUM_EAT]    %ld\n", pdata->time[SUM_EAT]);
 	printf("time_last_eat    %ld\n", *(pdata->time_last_eat));
 	printf("life_flag        %d\n", *(pdata->life_flag));
 }
