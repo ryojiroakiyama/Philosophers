@@ -120,7 +120,7 @@ typedef struct s_manage_data
 
 // lib.c
 void		do_usleep(useconds_t microseconds);
-long		getmilitimeofday();
+long		gettimeofday_mili();
 long		ft_atol(char *str, bool *is_valid);
 int			ft_atoi(char *str, bool *is_valid);
 void		ft_putstr_fd(char *s, int fd);

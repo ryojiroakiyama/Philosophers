@@ -18,7 +18,7 @@ long	access_time_last_eat(t_thread_data *thread, t_access mode)
 
 	pthread_mutex_lock(thread->mutex[TO_LAST_EAT]);
 	if (mode == EDIT)
- 		*(thread->time_last_eat) = getmilitimeofday();
+ 		*(thread->time_last_eat) = gettimeofday_mili();
 	result = *(thread->time_last_eat);
 	pthread_mutex_unlock(thread->mutex[TO_LAST_EAT]);
 	return (result);
@@ -33,7 +33,7 @@ t_status	put_status(t_thread_data *thread, char *color, char *message, char to_d
 	{
 		if (to_die)
 			access_life_flag(thread, EDIT);
-		printf("%s%ld %d is %s\n%s", color, getmilitimeofday(), thread->order, message, RESET);
+		printf("%s%ld %d is %s\n%s", color, gettimeofday_mili(), thread->order, message, RESET);
 		status = SUCCESS;
 	}
 	else
@@ -89,7 +89,7 @@ void	*monitor_action(void *data)
 	while (1)
 	{
 		time_last_eat = access_time_last_eat(monitor, READ);
-		time_now = getmilitimeofday();
+		time_now = gettimeofday_mili();
 		if (time_now - time_last_eat > monitor->time[TO_DIE])
 		{
 			put_status(monitor, RED, DIE, 1);

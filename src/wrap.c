@@ -5,10 +5,10 @@ void	do_usleep(useconds_t microseconds)
 	long		endtime;
 	useconds_t	lefttime;
 
-	endtime = getmilitimeofday() + microseconds / 1000;
+	endtime = gettimeofday_mili() + microseconds / 1000;
 	while (TRUE)
 	{
-		lefttime = (endtime - getmilitimeofday()) * 1000;
+		lefttime = (endtime - gettimeofday_mili()) * 1000;
 		if (lefttime > 0)
 			usleep(lefttime / 2);
 		else
@@ -16,7 +16,7 @@ void	do_usleep(useconds_t microseconds)
 	}
 }
 
-long	getmilitimeofday()
+long	gettimeofday_mili()
 {
 	struct timeval 	tv;
 
@@ -26,4 +26,19 @@ long	getmilitimeofday()
 		return (-1);
 	}
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
+int xthread_create
+(pthread_t *thread, void *(*start_routine)(void *), void *arg, char *message)
+{
+	int	ret;
+
+	ret = pthread_create(thread, NULL, start_routine, arg);
+	if (ret)
+	{
+		ft_putstr_fd("error: pthread_create: ", STDERR_FILENO);
+		ft_putstr_fd(message, STDERR_FILENO);
+		ft_putstr_fd("\n", STDERR_FILENO);
+	}
+	return (ret);
 }
