@@ -1,5 +1,17 @@
 #include "philo.h"
 
+long	gettimeofday_milisecond()
+{
+	struct timeval 	tv;
+
+	if (gettimeofday(&tv, NULL) == -1)
+	{
+		put_error("gettimeofday");
+		return (-1);
+	}
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
 static size_t	ft_strlen(const char *s)
 {
 	size_t	i;

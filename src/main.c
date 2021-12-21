@@ -7,19 +7,21 @@ t_status	run_thread(t_manage_data *mdata)
 	long			time_start;
 
 	time_start = gettimeofday_milisecond();
-	if (time_start < 0)
+	if (time_start == -1)
 		return (FAIL);
 	philo_index = mdata->philo_num;
 	while (philo_index--)
 	{
 		a_philo = mdata->philos + philo_index;
 		a_philo->time[LAST_EAT] = time_start;
-		pthread_create(&(a_philo->thread_id), NULL, &philo_action, a_philo);
+		if (pthread_create(&(a_philo->thread_id), NULL, &philo_action, a_philo))
+			put_error("pthread_create");
 	}
 	while (++philo_index < mdata->philo_num)
 	{
 		a_philo = mdata->philos + philo_index;
-		pthread_join(a_philo->thread_id, NULL);
+		if (pthread_join(a_philo->thread_id, NULL))
+			put_error("pthread_join");
 	}
 	return (SUCCESS);
 }
