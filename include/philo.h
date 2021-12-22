@@ -27,7 +27,8 @@
 # define RESET "\033[0m"
 
 # define UNSPECIFIED -1
-# define INTERVAL 10000
+# define MONITOR_INTERVAL 500
+# define PHILO_INTERVAL 200
 
 // status some one died or not
 typedef enum e_life

@@ -117,8 +117,7 @@ void	*monitor_action(void *data)
 			put_status(monitor, RED, DIE, 1);
 			break ;
 		}
-		xsleep(time_diff * 1000);//./philo 5 100 100 300で止まる時がある
-		//xsleep(INTERVAL);
+		xsleep(MONITOR_INTERVAL);
 		pretime_last_eat = time_last_eat;
 	}
 	return (data);
@@ -135,7 +134,7 @@ void	*philo_action(void *data)
 	if (xthread_create(&(monitor->thread_id), &monitor_action, monitor, "for monitor"))
 		return(data);
 	if (philo->order % 2 == 1)
-		xsleep(200);
+		xsleep(PHILO_INTERVAL);
 	status = SUCCESS;
 	while (status == SUCCESS)
 	{
