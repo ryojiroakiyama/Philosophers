@@ -101,7 +101,7 @@ void	*monitor_action(void *data)
 	pretime_last_eat = access_time_last_eat(monitor, READ);
 	if (pretime_last_eat == -1)
 		return (data);
-	while (access_life_flag(monitor, READ) == NO_ONE_DIED)
+	while (1)
 	{
 		time_last_eat = access_time_last_eat(monitor, READ);
 		if (time_last_eat == -1)
@@ -112,11 +112,13 @@ void	*monitor_action(void *data)
 		if (time_now == -1)
 			break ;
 		time_diff = time_now - time_last_eat;
-		if (time_diff > monitor->time[TO_DIE])
+		printf("%d, %ld, %ld\n", monitor->order,  time_diff, monitor->time[TO_DIE]);
+		if (time_diff >= monitor->time[TO_DIE])
 		{
 			put_status(monitor, RED, DIE, 1);
 			break ;
 		}
+		//xsleep(time_diff * 1000);
 		xsleep(MONITOR_INTERVAL);
 		pretime_last_eat = time_last_eat;
 	}

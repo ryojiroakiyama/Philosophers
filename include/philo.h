@@ -28,7 +28,7 @@
 
 # define UNSPECIFIED -1
 # define MONITOR_INTERVAL 500
-# define PHILO_INTERVAL 200
+# define PHILO_INTERVAL 1000
 
 // status some one died or not
 typedef enum e_life

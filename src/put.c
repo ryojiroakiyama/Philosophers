@@ -12,15 +12,22 @@ void	put_manage_data(t_manage_data *mdata)
 
 void	put_thread_data(t_thread_data *pdata)
 {
-	printf("philo_data:\n");
+	printf("-----------------------------------------------\n");
 	printf("order            %d\n", pdata->order);
-	printf("times_must_eat   %d\n", pdata->times_must_eat);
-	printf("time[TO_DIE]     %ld\n", pdata->time[TO_DIE]);
-	printf("time[TO_EAT]     %ld\n", pdata->time[TO_EAT]);
-	printf("time[TO_SLEEP]   %ld\n", pdata->time[TO_SLEEP]);
-	printf("time[LAST_EAT    %ld\n", pdata->time[LAST_EAT]);
-	printf("time_last_eat    %ld\n", *(pdata->time_last_eat));
-	printf("life_flag        %d\n", *(pdata->life_flag));
+	//printf("times_ate        %d\n", pdata->times_ate);
+	//printf("times_must_eat   %d\n", pdata->times_must_eat);
+	//printf("time[TO_DIE]     %ld\n", pdata->time[TO_DIE]);
+	//printf("time[TO_EAT]     %ld\n", pdata->time[TO_EAT]);
+	//printf("time[TO_SLEEP]   %ld\n", pdata->time[TO_SLEEP]);
+	//printf("time[LAST_EAT]   %ld\n", pdata->time[LAST_EAT]);
+	//printf("mutex[RIGHT_FORK]  %p\n", pdata->mutex[RIGHT_FORK ]) ;
+	//printf("mutex[LEFT_FORK]   %p\n", pdata->mutex[LEFT_FORK ]) ;
+	printf("mutex[TO_PUT]      %p\n", pdata->mutex[TO_PUT])  ;
+	printf("mutex[TO_LAST_EAT] %p\n", pdata->mutex[TO_LAST_EAT]);
+	printf("mutex[TO_LIFE_FLAG]%p\n", pdata->mutex[TO_LIFE_FLAG]);
+	//printf("time_last_eat    %p\n", pdata->time_last_eat);
+	//printf("life_flag        %p\n", pdata->life_flag);
+	printf("-----------------------------------------------\n");
 }
 
 t_status	put_error(char *message)

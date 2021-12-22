@@ -75,9 +75,15 @@ t_status	set_thread_data(t_manage_data *mdata)
 		set_thread_data_monitor(a_philo, a_philo->monitor);
 	}
 	//philo_index = 0;
-	//while (philo_index < 5)
+	//while (philo_index < mdata->philo_num)
 	//{
+	//	if (philo_index % 2 == 1)
+	//		printf("%s", GREEN);
+	//	else
+	//		printf("%s", CYAN);
 	//	put_thread_data(mdata->philos + philo_index);
+	//	put_thread_data(mdata->monitors + philo_index);
+	//	printf("%s", RESET);
 	//	philo_index++;
 	//}
 	//exit(0);
