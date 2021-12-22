@@ -151,7 +151,7 @@ t_status	run_thread(t_manage_data *mdata);
 void		free_memory(t_manage_data *mdata);
 
 // wrap.c
-void		usleep_accurate(useconds_t microseconds);
+t_status	do_usleep(useconds_t microseconds);
 long		gettimeofday_mili();
 int			thre_create(pthread_t *thread, void *(*start_routine)(void *), void *arg, char *message);
 int 		thre_join(pthread_t thread, char *message);

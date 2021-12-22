@@ -1,19 +1,39 @@
 #include "philo.h"
 
-void	usleep_accurate(useconds_t microseconds)
+static long	gettimeofday_micro()
 {
-	long		endtime;
-	useconds_t	lefttime;
+	struct timeval 	tv;
 
-	endtime = gettimeofday_mili() + microseconds / 1000;
+	if (gettimeofday(&tv, NULL) == -1)
+	{
+		printf("error");
+		return (-1);
+	}
+	return (tv.tv_sec * 1000 * 1000 + tv.tv_usec);
+}
+
+t_status	do_usleep(useconds_t microseconds)
+{
+	long	time_now;
+	long	time_end;
+	long	time_left;
+
+	time_now = gettimeofday_micro();
+	if (time_now == -1)
+		return (FAIL);
+	time_end = time_now + microseconds;
 	while (TRUE)
 	{
-		lefttime = (endtime - gettimeofday_mili()) * 1000;
-		if (lefttime > 0)
-			usleep(lefttime / 2);
+		time_now = gettimeofday_micro();
+		if (time_now == -1)
+			return (FAIL);
+		time_left = time_end - time_now;
+		if (time_left > 0)
+			usleep(time_left / 2);
 		else
 			break;
 	}
+	return(SUCCESS);
 }
 
 long	gettimeofday_mili()
