@@ -74,7 +74,8 @@ t_status	philo_think(t_thread_data *philo)
 	return (status);
 }
 
-static bool	is_full(t_thread_data *monitor, long pretime_last_eat, long time_last_eat)
+static bool	is_full
+(t_thread_data *monitor, long pretime_last_eat, long time_last_eat)
 {
 	if (monitor->times_must_eat != UNSPECIFIED && \
 		pretime_last_eat != time_last_eat)
@@ -89,13 +90,29 @@ static bool	is_full(t_thread_data *monitor, long pretime_last_eat, long time_las
 	return(false);
 }
 
+static bool	is_died
+(t_thread_data *monitor, long time_last_eat)
+{
+	long	time_now;
+	long	time_diff;
+
+	time_now = gettimeofday_mili();
+	if (time_now == -1)
+		return(true);
+	time_diff = time_now - time_last_eat;
+	if (time_diff >= monitor->time[TO_DIE])
+	{
+		put_status(monitor, RED, DIE, 1);
+		return(true);
+	}
+	return(false);
+}
+
 void	*monitor_action(void *data)
 {
 	t_thread_data	*monitor;
 	long			pretime_last_eat;
 	long			time_last_eat;
-	long			time_now;
-	long			time_diff;
 
 	monitor = (t_thread_data *)data;
 	pretime_last_eat = access_time_last_eat(monitor, READ);
@@ -108,17 +125,8 @@ void	*monitor_action(void *data)
 			break ;
 		if (is_full(monitor, pretime_last_eat, time_last_eat))
 			break ;
-		time_now = gettimeofday_mili();
-		if (time_now == -1)
+		if (is_died(monitor, time_last_eat))
 			break ;
-		time_diff = time_now - time_last_eat;
-		//printf("%d, %ld, %ld\n", monitor->order,  time_diff, monitor->time[TO_DIE]);
-		if (time_diff >= monitor->time[TO_DIE])
-		{
-			put_status(monitor, RED, DIE, 1);
-			break ;
-		}
-		//usleep_accurate(time_diff * 1000);
 		usleep_accurate(MONITOR_INTERVAL);
 		pretime_last_eat = time_last_eat;
 	}
@@ -134,7 +142,7 @@ void	*philo_action(void *data)
 	monitor = philo->monitor;
 	if (thre_create(&(monitor->thread_id), &monitor_action, monitor, "for monitor"))
 		return(data);
-	if (philo->order % 2 == 1)
+	if (philo->order % 2 == 0)
 		usleep_accurate(PHILO_INTERVAL);
 	while (1)
 	{
