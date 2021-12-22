@@ -112,7 +112,7 @@ void	*monitor_action(void *data)
 		if (time_now == -1)
 			break ;
 		time_diff = time_now - time_last_eat;
-		printf("%d, %ld, %ld\n", monitor->order,  time_diff, monitor->time[TO_DIE]);
+		//printf("%d, %ld, %ld\n", monitor->order,  time_diff, monitor->time[TO_DIE]);
 		if (time_diff >= monitor->time[TO_DIE])
 		{
 			put_status(monitor, RED, DIE, 1);
@@ -129,7 +129,6 @@ void	*philo_action(void *data)
 {
 	t_thread_data	*philo;
 	t_thread_data	*monitor;
-	t_status		status;
 
 	philo = (t_thread_data *)data;
 	monitor = philo->monitor;
@@ -137,14 +136,12 @@ void	*philo_action(void *data)
 		return(data);
 	if (philo->order % 2 == 1)
 		xsleep(PHILO_INTERVAL);
-	status = SUCCESS;
-	while (status == SUCCESS)
+	while (1)
 	{
-		status = philo_eat(philo);
-		if (status == SUCCESS)
-			status =  philo_sleep(philo);
-		if (status == SUCCESS)
-			status = philo_think(philo);
+		if (philo_eat(philo) == FAIL ||
+			philo_sleep(philo) == FAIL ||
+			philo_think(philo) == FAIL)
+			break ;
 	}
 	xthread_join(monitor->thread_id, "for monitor");
 	return (data);
