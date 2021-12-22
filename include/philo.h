@@ -84,6 +84,7 @@ typedef struct s_thread_data
 {
 	pthread_t				thread_id;
 	int						order;
+	int						times_ate;
 	int						times_must_eat;
 	long					time[TIME_NUM];
 	pthread_mutex_t			*mutex[MUTEX_NUM];
