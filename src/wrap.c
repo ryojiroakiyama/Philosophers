@@ -6,7 +6,7 @@ static long	gettimeofday_micro()
 
 	if (gettimeofday(&tv, NULL) == -1)
 	{
-		printf("error");
+		put_error("gettimeofday");
 		return (-1);
 	}
 	return (tv.tv_sec * 1000 * 1000 + tv.tv_usec);
@@ -20,18 +20,18 @@ t_status	do_usleep(useconds_t microseconds)
 
 	time_now = gettimeofday_micro();
 	if (time_now == -1)
-		return (FAIL);
+		return (put_error("time_now"));
 	time_end = time_now + microseconds;
 	while (TRUE)
 	{
 		time_now = gettimeofday_micro();
 		if (time_now == -1)
-			return (FAIL);
+			return (put_error("time_now"));
 		time_left = time_end - time_now;
-		if (time_left > 0)
-			usleep(time_left / 2);
-		else
-			break;
+		if (time_left <= 0)
+			break ;
+		else if (usleep(time_left / 2))
+			return (put_error("usleep"));
 	}
 	return(SUCCESS);
 }
