@@ -1,6 +1,6 @@
 #include "philo.h"
 
-void	xsleep(useconds_t microseconds)
+void	usleep_accurate(useconds_t microseconds)
 {
 	long		endtime;
 	useconds_t	lefttime;
@@ -28,7 +28,7 @@ long	gettimeofday_mili()
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-int xthread_create
+int thre_create
 (pthread_t *thread, void *(*start_routine)(void *), void *arg, char *message)
 {
 	int	ret;
@@ -43,7 +43,7 @@ int xthread_create
 	return (ret);
 }
 
-int xthread_join(pthread_t thread, char *message)
+int thre_join(pthread_t thread, char *message)
 {
 	int ret;
 

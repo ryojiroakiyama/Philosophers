@@ -51,7 +51,7 @@ t_status	philo_eat(t_thread_data *philo)
 	access_time_last_eat(philo, EDIT);
 	status = put_status(philo, GREEN, EAT, 0);
 	if (status == SUCCESS)
-		xsleep(philo->time[TO_EAT] * 1000);
+		usleep_accurate(philo->time[TO_EAT] * 1000);
 	pthread_mutex_unlock(philo->mutex[RIGHT_FORK]);
 	pthread_mutex_unlock(philo->mutex[LEFT_FORK]);
 	return (status);
@@ -62,7 +62,7 @@ t_status	philo_sleep(t_thread_data *philo)
 	t_status	status;
 	status = put_status(philo, BLUE, SLEEP, 0);
 	if (status == SUCCESS)
-		xsleep(philo->time[TO_SLEEP] * 1000);
+		usleep_accurate(philo->time[TO_SLEEP] * 1000);
 	return (status);
 }
 
@@ -118,8 +118,8 @@ void	*monitor_action(void *data)
 			put_status(monitor, RED, DIE, 1);
 			break ;
 		}
-		//xsleep(time_diff * 1000);
-		xsleep(MONITOR_INTERVAL);
+		//usleep_accurate(time_diff * 1000);
+		usleep_accurate(MONITOR_INTERVAL);
 		pretime_last_eat = time_last_eat;
 	}
 	return (data);
@@ -132,10 +132,10 @@ void	*philo_action(void *data)
 
 	philo = (t_thread_data *)data;
 	monitor = philo->monitor;
-	if (xthread_create(&(monitor->thread_id), &monitor_action, monitor, "for monitor"))
+	if (thre_create(&(monitor->thread_id), &monitor_action, monitor, "for monitor"))
 		return(data);
 	if (philo->order % 2 == 1)
-		xsleep(PHILO_INTERVAL);
+		usleep_accurate(PHILO_INTERVAL);
 	while (1)
 	{
 		if (philo_eat(philo) == FAIL ||
@@ -143,6 +143,6 @@ void	*philo_action(void *data)
 			philo_think(philo) == FAIL)
 			break ;
 	}
-	xthread_join(monitor->thread_id, "for monitor");
+	thre_join(monitor->thread_id, "for monitor");
 	return (data);
 }

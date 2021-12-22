@@ -151,9 +151,9 @@ t_status	run_thread(t_manage_data *mdata);
 void		free_memory(t_manage_data *mdata);
 
 // wrap.c
-void		xsleep(useconds_t microseconds);
+void		usleep_accurate(useconds_t microseconds);
 long		gettimeofday_mili();
-int			xthread_create(pthread_t *thread, void *(*start_routine)(void *), void *arg, char *message);
-int 		xthread_join(pthread_t thread, char *message);
+int			thre_create(pthread_t *thread, void *(*start_routine)(void *), void *arg, char *message);
+int 		thre_join(pthread_t thread, char *message);
 
 #endif
