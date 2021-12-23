@@ -1,6 +1,6 @@
 #include "philo.h"
 
-t_status	philo_eat(t_thread_data *philo)
+static t_status	philo_eat(t_thread_data *philo)
 {
 	t_status	status;
 
@@ -15,7 +15,7 @@ t_status	philo_eat(t_thread_data *philo)
 	return (status);
 }
 
-t_status	philo_sleep(t_thread_data *philo)
+static t_status	philo_sleep(t_thread_data *philo)
 {
 	t_status	status;
 	status = put_status(philo, BLUE, SLEEP, CONTINUE);
@@ -24,7 +24,7 @@ t_status	philo_sleep(t_thread_data *philo)
 	return (status);
 }
 
-t_status	philo_think(t_thread_data *philo)
+static t_status	philo_think(t_thread_data *philo)
 {
 	t_status	status;
 
@@ -40,7 +40,10 @@ void	*philo_action(void *data)
 	philo = (t_thread_data *)data;
 	monitor = philo->monitor;
 	if (thre_create(&(monitor->thread_id), &monitor_action, monitor, "for monitor"))
+	{
+		put_status(philo, YEELOW, ERR, END);
 		return(data);
+	}
 	if (philo->order % 2 == 0 && do_usleep(PHILO_INTERVAL) == FAIL)
 		return(data);
 	while (1)

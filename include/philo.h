@@ -94,9 +94,17 @@ typedef enum e_threads
 {
 	PHILOS,
 	MONITORS,
-	LAST,
 	THREADS_NUM
 }	t_threads;
+
+typedef enum e_mutexies
+{
+	FORKS,
+	LASTEAT,
+	PUT,
+	LIFE,
+	MUTEXIES_NUM
+}	t_mutexies;
 
 typedef enum e_array_content
 {
@@ -137,10 +145,12 @@ typedef struct s_manage_data
 	t_life			life_flag;
 	t_thread_data	*threads;
 	int				threinfo[THREADS_NUM][CONTENT_NUM];
-	pthread_mutex_t	*forks;
-	pthread_mutex_t	*lasteat;
-	pthread_mutex_t	*put;
-	pthread_mutex_t	*life;
+	pthread_mutex_t	*mutexies;
+	int				mutexinfo[MUTEXIES_NUM][CONTENT_NUM];
+	//pthread_mutex_t	*forks;
+	//pthread_mutex_t	*lasteat;
+	//pthread_mutex_t	*put;
+	//pthread_mutex_t	*life;
 }	t_manage_data;
 
 // lib.c
@@ -159,9 +169,6 @@ t_status	put_arg_error(char *message);
 t_life		access_life_flag(t_thread_data *thread, t_access mode);
 long		access_time_last_eat(t_thread_data *thread, t_access mode);
 t_status	put_status(t_thread_data *thread, char *color, char *message, t_put to);
-t_status	philo_eat(t_thread_data *philo);
-t_status	philo_sleep(t_thread_data *philo);
-t_status	philo_think(t_thread_data *philo);
 void		*monitor_action(void *data);
 void		*philo_action(void *data);
 

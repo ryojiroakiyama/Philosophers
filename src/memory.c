@@ -1,10 +1,5 @@
 #include "philo.h"
 
-static int	wrap_mutex_init(pthread_mutex_t *mutex)
-{
-	return pthread_mutex_init(mutex, NULL);
-}
-
 static t_status handle_mutex(pthread_mutex_t *mutex, int size, int (*f)(pthread_mutex_t *))
 {
 	int	idx;
@@ -19,23 +14,9 @@ static t_status handle_mutex(pthread_mutex_t *mutex, int size, int (*f)(pthread_
 	return (SUCCESS);
 }
 
-pthread_mutex_t	*set_mutex(int size)
+static int	wrap_mutex_init(pthread_mutex_t *mutex)
 {
-	pthread_mutex_t	*ans;
-
-	ans = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * size);
-	if (!ans)
-	{
-		put_error("malloc for mutex");
-		return(NULL);
-	}
-	if (handle_mutex(ans, size, wrap_mutex_init) == FAIL)
-	{
-		put_error("init mutex");
-		free(ans);
-		return(NULL);
-	}
-	return(ans);
+	return pthread_mutex_init(mutex, NULL);
 }
 
 typedef enum e_get_idx_mode
@@ -45,14 +26,14 @@ typedef enum e_get_idx_mode
 	MODE_NUM
 } t_get_idx_mode;
 
-int	get_idx(t_manage_data *mdata, t_get_idx_mode mode, int content)
+static int	get_idx(t_manage_data *mdata, t_get_idx_mode mode, int content)
 {
 	if (content == 0)
 		return 0;
 	if (mode == THREADS)
 		return (mdata->threinfo[content - 1][INDEX] + mdata->threinfo[content - 1][SIZE]);
-	//else if (mode == MUTEXIES)
-	//	return (mdata->threinfo[content][INDEX] + mdata->threinfo[content][SIZE])
+	else if (mode == MUTEXIES)
+		return (mdata->mutexinfo[content - 1][INDEX] + mdata->mutexinfo[content - 1][SIZE]);
 	return 0;
 }
 
@@ -62,39 +43,32 @@ t_status	set_mdata_memory(t_manage_data *mdata)
 	mdata->threinfo[PHILOS][SIZE] = mdata->philo_num;
 	mdata->threinfo[MONITORS][INDEX] = get_idx(mdata, THREADS, MONITORS);
 	mdata->threinfo[MONITORS][SIZE] = mdata->philo_num;
-	mdata->threads = (t_thread_data *)malloc(sizeof(t_thread_data) * get_idx(mdata, THREADS, LAST));
+	mdata->threads = (t_thread_data *)malloc(sizeof(t_thread_data) * get_idx(mdata, THREADS, THREADS_NUM));
 	if (!mdata->threads)
 		return (put_error("malloc for threads"));
-	mdata->forks = set_mutex(mdata->philo_num);
-	if (!mdata->forks)
-		return (put_error("set_mdata_memory for fork"));
-	mdata->lasteat = set_mutex(mdata->philo_num);
-	if (!mdata->lasteat)
-		return (put_error("set_mdata_memory for ate"));
-	mdata->put = set_mutex(1);
-	if (!mdata->put)
-		return (put_error("set_mdata_memory for put"));
-	mdata->life = set_mutex(1);
-	if (!mdata->life)
-		return (put_error("set_mdata_memory for life"));
+	mdata->mutexinfo[FORKS][INDEX] = get_idx(mdata, MUTEXIES, FORKS);
+	mdata->mutexinfo[FORKS][SIZE] = mdata->philo_num;
+	mdata->mutexinfo[LASTEAT][INDEX] = get_idx(mdata, MUTEXIES, LASTEAT);
+	mdata->mutexinfo[LASTEAT][SIZE] = mdata->philo_num;
+	mdata->mutexinfo[PUT][INDEX] = get_idx(mdata, MUTEXIES, PUT);
+	mdata->mutexinfo[PUT][SIZE] = 1;
+	mdata->mutexinfo[LIFE][INDEX] = get_idx(mdata, MUTEXIES, LIFE);
+	mdata->mutexinfo[LIFE][SIZE] = 1;
+	mdata->mutexies = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * get_idx(mdata, MUTEXIES, MUTEXIES_NUM));
+	if (!mdata->mutexies)
+		return (put_error("malloc for mutexies"));
+	if (handle_mutex(mdata->mutexies, get_idx(mdata, MUTEXIES, MUTEXIES_NUM), wrap_mutex_init) == FAIL)
+		return (put_error("init mutexies"));
 	return (SUCCESS);
-}
-
-static void free_mutex(pthread_mutex_t *m, int size)
-{
-	if (m)
-	{
-		if (handle_mutex(m, size, pthread_mutex_destroy) == FAIL)
-			put_error("mutex destroy");
-		free(m);
-	}
 }
 
 void	free_memory(t_manage_data *mdata)
 {
 	free(mdata->threads);
-	free_mutex(mdata->forks, mdata->philo_num);
-	free_mutex(mdata->lasteat, mdata->philo_num);
-	free_mutex(mdata->put, 1);
-	free_mutex(mdata->life, 1);
+	if (mdata->mutexies)
+	{
+		if (handle_mutex(mdata->mutexies, get_idx(mdata, MUTEXIES, MUTEXIES_NUM), pthread_mutex_destroy) == FAIL)
+			put_error("mutex destroy");
+		free(mdata->mutexies);
+	}
 }
