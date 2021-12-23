@@ -31,6 +31,8 @@ static bool	is_died
 		put_status(monitor, RED, DIE, 1);
 		return(true);
 	}
+	if (do_usleep(time_diff / 2) == FAIL)
+		return(true);
 	return(false);
 }
 
@@ -52,8 +54,6 @@ void	*monitor_action(void *data)
 		if (is_full(monitor, pretime_last_eat, time_last_eat))
 			break ;
 		if (is_died(monitor, time_last_eat))
-			break ;
-		if (do_usleep(MONITOR_INTERVAL) == FAIL)
 			break ;
 		pretime_last_eat = time_last_eat;
 	}
