@@ -7,10 +7,12 @@ SRCDIR	= ./src
 SRCNAME	=	main.c \
 			lib.c \
 			put.c \
-			thread.c \
+			thread_funcs.c \
 			setdata.c \
 			memory.c \
-			wrap.c
+			wrap.c \
+			monitor.c \
+			philo.c
 SRCS	= $(addprefix $(SRCDIR)/, $(SRCNAME))
 
 OBJDIR	= ./obj
