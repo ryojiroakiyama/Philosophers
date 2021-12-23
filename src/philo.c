@@ -44,7 +44,7 @@ void	*philo_action(void *data)
 		put_status(philo, YEELOW, ERR, END);
 		return(data);
 	}
-	if (philo->order % 2 == 0 && do_usleep(PHILO_INTERVAL) == FAIL)
+	if (philo->order % 2 == 0 && do_usleep(INTERVAL) == FAIL)
 		return(data);
 	while (1)
 	{
