@@ -5,12 +5,12 @@ static int	wrap_mutex_init(pthread_mutex_t *mutex)
 	return pthread_mutex_init(mutex, NULL);
 }
 
-static t_status handle_mutex(pthread_mutex_t *mutex, int len, int (*f)(pthread_mutex_t *))
+static t_status handle_mutex(pthread_mutex_t *mutex, int size, int (*f)(pthread_mutex_t *))
 {
 	int	idx;
 
 	idx = 0;
-	while (idx < len)
+	while (idx < size)
 	{
 		if (f(mutex + idx))
 			return (FAIL);
@@ -66,34 +66,22 @@ t_status	set_mdata_mem(t_manage_data *mdata)
 	return (SUCCESS);
 }
 
+static void free_mutex(pthread_mutex_t *m, int size)
+{
+	if (m)
+	{
+		if (handle_mutex(m, size, pthread_mutex_destroy) == FAIL)
+			put_error("mutex destroy");
+		free(m);
+	}
+}
+
 void	free_memory(t_manage_data *mdata)
 {
-	if (mdata->philos)
-		free(mdata->philos);
-	if (mdata->monitors)
-		free(mdata->monitors);
-	if (mdata->forks)
-	{
-		if (handle_mutex(mdata->forks, mdata->philo_num, pthread_mutex_destroy) == FAIL)
-			put_error("destroy");
-		free(mdata->forks);
-	}
-	if (mdata->ate)
-	{
-		if (handle_mutex(mdata->ate, mdata->philo_num, pthread_mutex_destroy) == FAIL)
-			put_error("destory");
-		free(mdata->ate);
-	}
-	if (mdata->put)
-	{
-		if (handle_mutex(mdata->put, 1, pthread_mutex_destroy) == FAIL)
-			put_error("destory");
-		free(mdata->put);
-	}
-	if (mdata->life)
-	{
-		if (handle_mutex(mdata->life, 1, pthread_mutex_destroy) == FAIL)
-			put_error("destory");
-		free(mdata->life);
-	}
+	free(mdata->philos);
+	free(mdata->monitors);
+	free_mutex(mdata->forks, mdata->philo_num);
+	free_mutex(mdata->ate, mdata->philo_num);
+	free_mutex(mdata->put, 1);
+	free_mutex(mdata->life, 1);
 }
