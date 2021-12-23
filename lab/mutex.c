@@ -26,13 +26,20 @@ int	main(void)
 	pthread_join(thread_id, NULL);
 	//mutex.__sig = 10000;
 	//mutex.__opaque[1] = 1;
-	pthread_mutex_destroy(&mutex);
-	pthread_mutex_destroy(&mutex);
-	pthread_mutex_destroy(&mutex);
-	pthread_mutex_destroy(&mutex);
-	pthread_mutex_destroy(&mutex);
-	pthread_mutex_destroy(&mutex);
-	pthread_mutex_destroy(&mutex);
+	printf("1:%s\n", strerror(pthread_mutex_destroy(&mutex)));
+	printf("2:%s\n", strerror(pthread_mutex_destroy(&mutex)));
+	memset(&mutex, 0, sizeof(mutex));
+	//mutex = (pthread_mutex_t){0};
+	printf("3:%s\n", strerror(pthread_mutex_destroy(&mutex)));
+	pthread_mutex_init(&mutex, NULL);
+	pthread_mutex_lock(&mutex);
+	printf("4:%s\n", strerror(pthread_mutex_destroy(&mutex)));
+	pthread_mutex_unlock(&mutex);
+	printf("5:%s\n", strerror(pthread_mutex_destroy(&mutex)));
 	//pthread_mutex_destroy(NULL);
+	pthread_mutex_t a;
+	memset(&a, 0, sizeof(a));
+	//a = (pthread_mutex_t){0};
+	printf("1:%s\n", strerror(pthread_mutex_destroy(&a)));
 	return (0);
 }

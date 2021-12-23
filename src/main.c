@@ -30,16 +30,6 @@ static t_status get_options(int argc, char *argv[], long options[OPTION_NUM])
 	return(SUCCESS);
 }
 
-static void zero(t_manage_data *mdata)
-{
-	mdata->philos = NULL;
-	mdata->monitors = NULL;
-	mdata->forks = NULL;
-	mdata->ate = NULL;
-	mdata->put = NULL;
-	mdata->life = NULL;
-}
-
 int	main(int argc, char *argv[])
 {
 	t_manage_data	mdata;
@@ -48,10 +38,10 @@ int	main(int argc, char *argv[])
 
 	if (!(argc == 5 || argc == 6))
 		return (put_arg_error("number of arguments"));
-	zero(&mdata);
+	mdata = (t_manage_data){0};
 	if (get_options(argc, argv, options) == SUCCESS && \
 		set_mdata_num(&mdata, options) == SUCCESS && \
-		set_mdata_mem(&mdata) == SUCCESS && \
+		set_memory(&mdata) == SUCCESS && \
 		set_thread_data(&mdata) == SUCCESS && \
 		run_thread(&mdata) == SUCCESS)
 			return_status = SUCCESS;

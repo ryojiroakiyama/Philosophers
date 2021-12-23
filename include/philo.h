@@ -152,7 +152,7 @@ void		*philo_action(void *data);
 
 // main
 t_status	set_mdata_num(t_manage_data *mdata, long options[OPTION_NUM]);
-t_status	set_mdata_mem(t_manage_data *mdata);
+t_status	set_memory(t_manage_data *mdata);
 t_status	set_thread_data(t_manage_data *mdata);
 t_status	run_thread(t_manage_data *mdata);
 
