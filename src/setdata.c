@@ -1,6 +1,6 @@
 #include "philo.h"
 
-t_status	set_mdata_num(t_manage_data *mdata, long options[OPTION_NUM])
+t_status	set_mdata_number(t_manage_data *mdata, long options[OPTION_NUM])
 {
 	t_time	idx_time;
 
@@ -40,7 +40,7 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, in
 	philo->mutex[RIGHT_FORK] = mdata->forks + philo_index;
 	philo->mutex[LEFT_FORK] = mdata->forks + ((philo_index + 1) % mdata->philo_num);
 	philo->mutex[TO_PUT] = mdata->put;
-	philo->mutex[TO_LAST_EAT] = mdata->ate + philo_index;
+	philo->mutex[TO_LAST_EAT] = mdata->lasteat + philo_index;
 	philo->mutex[TO_LIFE_FLAG] = mdata->life;
 	philo->time_last_eat = &(philo->time[LAST_EAT]);
 	philo->monitor = mdata->monitors + philo_index;

@@ -123,7 +123,7 @@ typedef struct s_manage_data
 	t_thread_data	*philos;
 	t_thread_data	*monitors;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t	*ate;
+	pthread_mutex_t	*lasteat;
 	pthread_mutex_t	*put;
 	pthread_mutex_t	*life;
 }	t_manage_data;
@@ -151,8 +151,8 @@ void		*monitor_action(void *data);
 void		*philo_action(void *data);
 
 // main
-t_status	set_mdata_num(t_manage_data *mdata, long options[OPTION_NUM]);
-t_status	set_memory(t_manage_data *mdata);
+t_status	set_mdata_number(t_manage_data *mdata, long options[OPTION_NUM]);
+t_status	set_mdata_memory(t_manage_data *mdata);
 t_status	set_thread_data(t_manage_data *mdata);
 t_status	run_thread(t_manage_data *mdata);
 

@@ -40,8 +40,8 @@ int	main(int argc, char *argv[])
 		return (put_arg_error("number of arguments"));
 	mdata = (t_manage_data){0};
 	if (get_options(argc, argv, options) == SUCCESS && \
-		set_mdata_num(&mdata, options) == SUCCESS && \
-		set_memory(&mdata) == SUCCESS && \
+		set_mdata_number(&mdata, options) == SUCCESS && \
+		set_mdata_memory(&mdata) == SUCCESS && \
 		set_thread_data(&mdata) == SUCCESS && \
 		run_thread(&mdata) == SUCCESS)
 			return_status = SUCCESS;

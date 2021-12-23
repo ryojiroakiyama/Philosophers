@@ -38,7 +38,7 @@ pthread_mutex_t	*set_mutex(int size)
 	return(ans);
 }
 
-t_status	set_memory(t_manage_data *mdata)
+t_status	set_mdata_memory(t_manage_data *mdata)
 {
 	mdata->philos = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->philo_num);
 	if (!mdata->philos)
@@ -48,16 +48,16 @@ t_status	set_memory(t_manage_data *mdata)
 		return (put_error("malloc for monitor thread"));
 	mdata->forks = set_mutex(mdata->philo_num);
 	if (!mdata->forks)
-		return (put_error("set_memory for fork"));
-	mdata->ate = set_mutex(mdata->philo_num);
-	if (!mdata->ate)
-		return (put_error("set_memory for ate"));
+		return (put_error("set_mdata_memory for fork"));
+	mdata->lasteat = set_mutex(mdata->philo_num);
+	if (!mdata->lasteat)
+		return (put_error("set_mdata_memory for ate"));
 	mdata->put = set_mutex(1);
 	if (!mdata->put)
-		return (put_error("set_memory for put"));
+		return (put_error("set_mdata_memory for put"));
 	mdata->life = set_mutex(1);
 	if (!mdata->life)
-		return (put_error("set_memory for life"));
+		return (put_error("set_mdata_memory for life"));
 	return (SUCCESS);
 }
 
@@ -76,7 +76,7 @@ void	free_memory(t_manage_data *mdata)
 	free(mdata->philos);
 	free(mdata->monitors);
 	free_mutex(mdata->forks, mdata->philo_num);
-	free_mutex(mdata->ate, mdata->philo_num);
+	free_mutex(mdata->lasteat, mdata->philo_num);
 	free_mutex(mdata->put, 1);
 	free_mutex(mdata->life, 1);
 }
