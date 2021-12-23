@@ -43,7 +43,7 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, in
 	philo->mutex[TO_LAST_EAT] = mdata->lasteat + philo_index;
 	philo->mutex[TO_LIFE_FLAG] = mdata->life;
 	philo->time_last_eat = &(philo->time[LAST_EAT]);
-	philo->monitor = mdata->monitors + philo_index;
+	philo->monitor = mdata->threads + mdata->threinfo[MONITORS][INDEX] + philo_index;
 }
 
 static void	set_thread_data_monitor(t_thread_data *philo, t_thread_data *monitor)
@@ -70,7 +70,7 @@ t_status	set_thread_data(t_manage_data *mdata)
 	philo_index = mdata->philo_num;
 	while (philo_index--)
 	{
-		a_philo = mdata->philos + philo_index;
+		a_philo = mdata->threads + mdata->threinfo[PHILOS][INDEX] + philo_index;
 		set_thread_data_philo(mdata, a_philo, philo_index);
 		set_thread_data_monitor(a_philo, a_philo->monitor);
 	}

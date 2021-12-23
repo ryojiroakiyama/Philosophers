@@ -38,14 +38,33 @@ pthread_mutex_t	*set_mutex(int size)
 	return(ans);
 }
 
+typedef enum e_get_idx_mode
+{
+	THREADS,
+	MUTEXIES,
+	MODE_NUM
+} t_get_idx_mode;
+
+int	get_idx(t_manage_data *mdata, t_get_idx_mode mode, int content)
+{
+	if (content == 0)
+		return 0;
+	if (mode == THREADS)
+		return (mdata->threinfo[content - 1][INDEX] + mdata->threinfo[content - 1][SIZE]);
+	//else if (mode == MUTEXIES)
+	//	return (mdata->threinfo[content][INDEX] + mdata->threinfo[content][SIZE])
+	return 0;
+}
+
 t_status	set_mdata_memory(t_manage_data *mdata)
 {
-	mdata->philos = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->philo_num);
-	if (!mdata->philos)
-		return (put_error("malloc for philo thread"));
-	mdata->monitors = (t_thread_data *)malloc(sizeof(t_thread_data) * mdata->philo_num);
-	if (!mdata->monitors)
-		return (put_error("malloc for monitor thread"));
+	mdata->threinfo[PHILOS][INDEX] = get_idx(mdata, THREADS, PHILOS);
+	mdata->threinfo[PHILOS][SIZE] = mdata->philo_num;
+	mdata->threinfo[MONITORS][INDEX] = get_idx(mdata, THREADS, MONITORS);
+	mdata->threinfo[MONITORS][SIZE] = mdata->philo_num;
+	mdata->threads = (t_thread_data *)malloc(sizeof(t_thread_data) * get_idx(mdata, THREADS, LAST));
+	if (!mdata->threads)
+		return (put_error("malloc for threads"));
 	mdata->forks = set_mutex(mdata->philo_num);
 	if (!mdata->forks)
 		return (put_error("set_mdata_memory for fork"));
@@ -73,8 +92,7 @@ static void free_mutex(pthread_mutex_t *m, int size)
 
 void	free_memory(t_manage_data *mdata)
 {
-	free(mdata->philos);
-	free(mdata->monitors);
+	free(mdata->threads);
 	free_mutex(mdata->forks, mdata->philo_num);
 	free_mutex(mdata->lasteat, mdata->philo_num);
 	free_mutex(mdata->put, 1);

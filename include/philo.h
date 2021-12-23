@@ -90,6 +90,21 @@ typedef enum e_time
 	TIME_NUM
 }	t_time;
 
+typedef enum e_threads
+{
+	PHILOS,
+	MONITORS,
+	LAST,
+	THREADS_NUM
+}	t_threads;
+
+typedef enum e_array_content
+{
+	INDEX,
+	SIZE,
+	CONTENT_NUM
+} t_array_content;
+
 typedef struct s_thread_data
 {
 	pthread_t				thread_id;
@@ -120,8 +135,8 @@ typedef struct s_manage_data
 	int				times_must_eat;
 	long			time[TIME_NUM];
 	t_life			life_flag;
-	t_thread_data	*philos;
-	t_thread_data	*monitors;
+	t_thread_data	*threads;
+	int				threinfo[THREADS_NUM][CONTENT_NUM];
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*lasteat;
 	pthread_mutex_t	*put;
