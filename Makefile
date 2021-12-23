@@ -5,14 +5,15 @@ INCDIR	= ./include
 
 SRCDIR	= ./src
 SRCNAME	=	main.c \
-			lib.c \
-			put.c \
-			thread_funcs.c \
-			setdata.c \
 			memory.c \
-			wrap.c \
 			monitor.c \
-			philo.c
+			philo.c \
+			put.c \
+			run_thread.c \
+			setdata.c \
+			thread_funcs.c \
+			utils_wrapper.c \
+			utils.c
 SRCS	= $(addprefix $(SRCDIR)/, $(SRCNAME))
 
 OBJDIR	= ./obj
