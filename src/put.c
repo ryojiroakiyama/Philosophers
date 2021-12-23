@@ -20,8 +20,8 @@ void	put_thread_data(t_thread_data *pdata)
 	//printf("time[TO_EAT]     %ld\n", pdata->time[TO_EAT]);
 	//printf("time[TO_SLEEP]   %ld\n", pdata->time[TO_SLEEP]);
 	//printf("time[LAST_EAT]   %ld\n", pdata->time[LAST_EAT]);
-	//printf("mutex[RIGHT_FORK]  %p\n", pdata->mutex[RIGHT_FORK ]) ;
-	//printf("mutex[LEFT_FORK]   %p\n", pdata->mutex[LEFT_FORK ]) ;
+	//printf("mutex[TO_RIGHT_FORK]  %p\n", pdata->mutex[TO_RIGHT_FORK ]) ;
+	//printf("mutex[TO_LEFT_FORK]   %p\n", pdata->mutex[TO_LEFT_FORK ]) ;
 	printf("mutex[TO_PUT]      %p\n", pdata->mutex[TO_PUT])  ;
 	printf("mutex[TO_LAST_EAT] %p\n", pdata->mutex[TO_LAST_EAT]);
 	printf("mutex[TO_LIFE_FLAG]%p\n", pdata->mutex[TO_LIFE_FLAG]);

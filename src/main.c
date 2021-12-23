@@ -1,5 +1,15 @@
 #include "philo.h"
 
+typedef enum e_option
+{
+	NUM_OF_PHILO,
+	TIME_TO_DIE,
+	TIME_TO_EAT,
+	TIME_TO_SLEEP,
+	TIMES_PHILO_MUST_EAT,
+	OPTION_NUM
+}	t_option;
+
 /*
 **  argv[1] options[0]: number_of_philosophers, int
 **      [2]        [1]: time_to_die, long
@@ -30,6 +40,24 @@ static t_status get_options(int argc, char *argv[], long options[OPTION_NUM])
 	return(SUCCESS);
 }
 
+static t_status	set_mdata_number(t_manage_data *mdata, long options[OPTION_NUM])
+{
+	t_time	idx_time;
+
+	mdata->philo_num = options[NUM_OF_PHILO];
+	mdata->times_must_eat = options[TIMES_PHILO_MUST_EAT];
+	idx_time = 0;
+	while (idx_time < TIME_NUM)
+	{
+		mdata->time[idx_time] = 0;
+		if (idx_time <= TO_SLEEP)
+			mdata->time[idx_time] = options[idx_time + 1];
+		idx_time++;
+	}
+	mdata->life_flag = NO_ONE_DIED;
+	return (SUCCESS);
+}
+
 int	main(int argc, char *argv[])
 {
 	t_manage_data	mdata;
@@ -47,6 +75,6 @@ int	main(int argc, char *argv[])
 			return_status = SUCCESS;
 	else
 		return_status = FAIL;
-	free_memory(&mdata);
+	free_mdata_memory(&mdata);
 	return (return_status);
 }

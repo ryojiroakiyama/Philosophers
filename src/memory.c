@@ -23,7 +23,7 @@ typedef enum e_get_idx_mode
 {
 	THREADS,
 	MUTEXIES,
-	MODE_NUM
+	GET_IDX_MODE_NUM
 } t_get_idx_mode;
 
 static int	get_idx(t_manage_data *mdata, t_get_idx_mode mode, int content)
@@ -48,12 +48,12 @@ t_status	set_mdata_memory(t_manage_data *mdata)
 		return (put_error("malloc for threads"));
 	mdata->mutexinfo[FORKS][INDEX] = get_idx(mdata, MUTEXIES, FORKS);
 	mdata->mutexinfo[FORKS][SIZE] = mdata->philo_num;
-	mdata->mutexinfo[LASTEAT][INDEX] = get_idx(mdata, MUTEXIES, LASTEAT);
-	mdata->mutexinfo[LASTEAT][SIZE] = mdata->philo_num;
-	mdata->mutexinfo[PUT][INDEX] = get_idx(mdata, MUTEXIES, PUT);
-	mdata->mutexinfo[PUT][SIZE] = 1;
-	mdata->mutexinfo[LIFE][INDEX] = get_idx(mdata, MUTEXIES, LIFE);
-	mdata->mutexinfo[LIFE][SIZE] = 1;
+	mdata->mutexinfo[LASTEATS][INDEX] = get_idx(mdata, MUTEXIES, LASTEATS);
+	mdata->mutexinfo[LASTEATS][SIZE] = mdata->philo_num;
+	mdata->mutexinfo[PUTS][INDEX] = get_idx(mdata, MUTEXIES, PUTS);
+	mdata->mutexinfo[PUTS][SIZE] = 1;
+	mdata->mutexinfo[LIFES][INDEX] = get_idx(mdata, MUTEXIES, LIFES);
+	mdata->mutexinfo[LIFES][SIZE] = 1;
 	mdata->mutexies = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * get_idx(mdata, MUTEXIES, MUTEXIES_NUM));
 	if (!mdata->mutexies)
 		return (put_error("malloc for mutexies"));
@@ -62,7 +62,7 @@ t_status	set_mdata_memory(t_manage_data *mdata)
 	return (SUCCESS);
 }
 
-void	free_memory(t_manage_data *mdata)
+void	free_mdata_memory(t_manage_data *mdata)
 {
 	free(mdata->threads);
 	if (mdata->mutexies)

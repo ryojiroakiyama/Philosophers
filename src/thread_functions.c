@@ -24,7 +24,7 @@ long	access_time_last_eat(t_thread_data *thread, t_access mode)
 	return (result);
 }
 
-t_status	put_status(t_thread_data *thread, char *color, char *message, t_put to)
+t_status	put_status(t_thread_data *thread, char *color, char *message, t_put_mode to)
 {
 	t_status	status;
 

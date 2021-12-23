@@ -54,27 +54,17 @@ typedef enum e_access
 }	t_access;
 
 // status to use put_status()
-typedef enum e_put
+typedef enum e_put_mode
 {
 	CONTINUE,
 	END,
-	PUT_NAM
-}	t_put;
-
-typedef enum e_option
-{
-	NUM_OF_PHILO,
-	TIME_TO_DIE,
-	TIME_TO_EAT,
-	TIME_TO_SLEEP,
-	TIMES_PHILO_MUST_EAT,
-	OPTION_NUM
-}	t_option;
+	PUT_MODE_NUM
+}	t_put_mode;
 
 typedef enum e_mutex
 {
-	RIGHT_FORK,
-	LEFT_FORK,
+	TO_RIGHT_FORK,
+	TO_LEFT_FORK,
 	TO_PUT,
 	TO_LAST_EAT,
 	TO_LIFE_FLAG,
@@ -100,9 +90,9 @@ typedef enum e_threads
 typedef enum e_mutexies
 {
 	FORKS,
-	LASTEAT,
-	PUT,
-	LIFE,
+	LASTEATS,
+	PUTS,
+	LIFES,
 	MUTEXIES_NUM
 }	t_mutexies;
 
@@ -147,44 +137,37 @@ typedef struct s_manage_data
 	int				threinfo[THREADS_NUM][CONTENT_NUM];
 	pthread_mutex_t	*mutexies;
 	int				mutexinfo[MUTEXIES_NUM][CONTENT_NUM];
-	//pthread_mutex_t	*forks;
-	//pthread_mutex_t	*lasteat;
-	//pthread_mutex_t	*put;
-	//pthread_mutex_t	*life;
 }	t_manage_data;
 
-// lib.c
-long		ft_atol(char *str, bool *is_valid);
-int			ft_atoi(char *str, bool *is_valid);
-void		ft_putstr_fd(char *s, int fd);
 
-
+// memory.c
+t_status	set_mdata_memory(t_manage_data *mdata);
+void		free_mdata_memory(t_manage_data *mdata);
+// monitor.c
+void		*monitor_action(void *data);
+// philo.c
+void		*philo_action(void *data);
 // put.c
 void		put_manage_data(t_manage_data *mdata);
 void		put_thread_data(t_thread_data *pdata);
 t_status	put_error(char *message);
 t_status	put_arg_error(char *message);
-
-// thread
+// run_thread.c
+t_status	run_thread(t_manage_data *mdata);
+// set_thread_data.c
+t_status	set_thread_data(t_manage_data *mdata);
+// thread_functions.c
 t_life		access_life_flag(t_thread_data *thread, t_access mode);
 long		access_time_last_eat(t_thread_data *thread, t_access mode);
-t_status	put_status(t_thread_data *thread, char *color, char *message, t_put to);
-void		*monitor_action(void *data);
-void		*philo_action(void *data);
-
-// main
-t_status	set_mdata_number(t_manage_data *mdata, long options[OPTION_NUM]);
-t_status	set_mdata_memory(t_manage_data *mdata);
-t_status	set_thread_data(t_manage_data *mdata);
-t_status	run_thread(t_manage_data *mdata);
-
-// memory.c
-void		free_memory(t_manage_data *mdata);
-
-// wrap.c
+t_status	put_status(t_thread_data *thread, char *color, char *message, t_put_mode to);
+// utils_wrapper.c
 t_status	do_usleep(useconds_t microseconds);
 long		gettimeofday_mili();
 int			thre_create(pthread_t *thread, void *(*start_routine)(void *), void *arg, char *message);
 int 		thre_join(pthread_t thread, char *message);
+// utils.c
+void		ft_putstr_fd(char *s, int fd);
+long		ft_atol(char *str, bool *is_valid);
+int			ft_atoi(char *str, bool *is_valid);
 
 #endif

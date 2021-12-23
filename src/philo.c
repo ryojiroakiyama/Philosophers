@@ -4,14 +4,14 @@ static t_status	philo_eat(t_thread_data *philo)
 {
 	t_status	status;
 
-	pthread_mutex_lock(philo->mutex[RIGHT_FORK]);
-	pthread_mutex_lock(philo->mutex[LEFT_FORK]);
+	pthread_mutex_lock(philo->mutex[TO_RIGHT_FORK]);
+	pthread_mutex_lock(philo->mutex[TO_LEFT_FORK]);
 	access_time_last_eat(philo, EDIT);
 	status = put_status(philo, GREEN, EAT, CONTINUE);
 	if (status == SUCCESS && do_usleep(philo->time[TO_EAT] * 1000) == FAIL)
 		status = FAIL;
-	pthread_mutex_unlock(philo->mutex[RIGHT_FORK]);
-	pthread_mutex_unlock(philo->mutex[LEFT_FORK]);
+	pthread_mutex_unlock(philo->mutex[TO_RIGHT_FORK]);
+	pthread_mutex_unlock(philo->mutex[TO_LEFT_FORK]);
 	return (status);
 }
 

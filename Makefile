@@ -10,8 +10,8 @@ SRCNAME	=	main.c \
 			philo.c \
 			put.c \
 			run_thread.c \
-			setdata.c \
-			thread_funcs.c \
+			set_thread_data.c \
+			thread_functions.c \
 			utils_wrapper.c \
 			utils.c
 SRCS	= $(addprefix $(SRCDIR)/, $(SRCNAME))
