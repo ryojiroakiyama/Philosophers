@@ -25,9 +25,9 @@ do_test './philo 10 200 100 100'
 elif [ "$1" = "e2" ]; then
 do_test './philo 10 210 100 100'
 elif [ "$1" = "e3" ]; then
-do_test './philo 10 130 60 60'
-elif [ "$1" = "e4" ]; then
 do_test './philo 10 120 60 60'
+elif [ "$1" = "e4" ]; then
+do_test './philo 10 130 60 60'
 elif [ "$1" = "o1" ]; then
 do_test './philo 11 300 100 100'
 elif [ "$1" = "o2" ]; then

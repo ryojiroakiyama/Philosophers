@@ -24,14 +24,14 @@ long	access_time_last_eat(t_thread_data *thread, t_access mode)
 	return (result);
 }
 
-t_status	put_status(t_thread_data *thread, char *color, char *message, char to_die)
+t_status	put_status(t_thread_data *thread, char *color, char *message, t_put to)
 {
 	t_status	status;
 
 	pthread_mutex_lock(thread->mutex[TO_PUT]);
 	if (access_life_flag(thread, READ) == NO_ONE_DIED)
 	{
-		if (to_die)
+		if (to == END)
 			access_life_flag(thread, EDIT);
 		printf("%s%ld %d is %s\n%s", color, gettimeofday_mili(), thread->order, message, RESET);
 		status = SUCCESS;

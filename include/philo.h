@@ -14,6 +14,7 @@
 # define THINK "thinking"
 # define DIE "died"
 # define FULL "full"
+# define ERR "encounter error"
 
 // color settings
 # define RED "\033[31m"
@@ -51,6 +52,14 @@ typedef enum e_access
 	EDIT,
 	ACCESS_NUM
 }	t_access;
+
+// status to use put_status()
+typedef enum e_put
+{
+	CONTINUE,
+	END,
+	PUT_NAM
+}	t_put;
 
 typedef enum e_option
 {
@@ -134,7 +143,7 @@ t_status	put_arg_error(char *message);
 // thread
 t_life		access_life_flag(t_thread_data *thread, t_access mode);
 long		access_time_last_eat(t_thread_data *thread, t_access mode);
-t_status	put_status(t_thread_data *thread, char *color, char *message, char to_die);
+t_status	put_status(t_thread_data *thread, char *color, char *message, t_put to);
 t_status	philo_eat(t_thread_data *philo);
 t_status	philo_sleep(t_thread_data *philo);
 t_status	philo_think(t_thread_data *philo);

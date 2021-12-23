@@ -7,7 +7,7 @@ t_status	philo_eat(t_thread_data *philo)
 	pthread_mutex_lock(philo->mutex[RIGHT_FORK]);
 	pthread_mutex_lock(philo->mutex[LEFT_FORK]);
 	access_time_last_eat(philo, EDIT);
-	status = put_status(philo, GREEN, EAT, 0);
+	status = put_status(philo, GREEN, EAT, CONTINUE);
 	if (status == SUCCESS && do_usleep(philo->time[TO_EAT] * 1000) == FAIL)
 		status = FAIL;
 	pthread_mutex_unlock(philo->mutex[RIGHT_FORK]);
@@ -18,7 +18,7 @@ t_status	philo_eat(t_thread_data *philo)
 t_status	philo_sleep(t_thread_data *philo)
 {
 	t_status	status;
-	status = put_status(philo, BLUE, SLEEP, 0);
+	status = put_status(philo, BLUE, SLEEP, CONTINUE);
 	if (status == SUCCESS && do_usleep(philo->time[TO_SLEEP] * 1000) == FAIL)
 		status = FAIL;
 	return (status);
@@ -28,7 +28,7 @@ t_status	philo_think(t_thread_data *philo)
 {
 	t_status	status;
 
-	status = put_status(philo, CYAN, THINK, 0);
+	status = put_status(philo, CYAN, THINK, CONTINUE);
 	return (status);
 }
 
