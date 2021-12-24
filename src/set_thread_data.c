@@ -27,7 +27,8 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, \
 								((philo_index + 1) % mdata->philo_num);
 	philo->mutex[TO_LAST_EAT] = \
 		mdata->mutexies + mdata->mutexinfo[LASTEATS][INDEX] + philo_index;
-	philo->mutex[TO_LIFE_FLAG] = mdata->mutexies + mdata->mutexinfo[LIFEFLAGS][INDEX];
+	philo->mutex[TO_LIFE_FLAG] = \
+		mdata->mutexies + mdata->mutexinfo[LIFEFLAGS][INDEX];
 	philo->time_last_eat = &(philo->time[LAST_EAT]);
 	philo->monitor = \
 		mdata->threads + mdata->threinfo[MONITORS][INDEX] + philo_index;
