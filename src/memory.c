@@ -56,8 +56,6 @@ t_status	set_mdata_memory(t_manage_data *mdata)
 	mdata->mutexinfo[LASTEATS][SIZE] = mdata->philo_num;
 	mdata->mutexinfo[PUTS][INDEX] = get_idx(mdata, MUTEXIES, PUTS);
 	mdata->mutexinfo[PUTS][SIZE] = 1;
-	mdata->mutexinfo[LIFES][INDEX] = get_idx(mdata, MUTEXIES, LIFES);
-	mdata->mutexinfo[LIFES][SIZE] = 1;
 	mdata->mutexies = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * \
 									get_idx(mdata, MUTEXIES, MUTEXIES_NUM));
 	if (!mdata->mutexies)

@@ -67,7 +67,6 @@ typedef enum e_mutex
 	TO_LEFT_FORK,
 	TO_PUT,
 	TO_LAST_EAT,
-	TO_LIFE_FLAG,
 	MUTEX_NUM
 }	t_mutex;
 
@@ -92,7 +91,6 @@ typedef enum e_mutexies
 	FORKS,
 	LASTEATS,
 	PUTS,
-	LIFES,
 	MUTEXIES_NUM
 }	t_mutexies;
 
@@ -156,7 +154,6 @@ t_status	run_thread(t_manage_data *mdata);
 // set_thread_data.c
 t_status	set_thread_data(t_manage_data *mdata);
 // thread_functions.c
-t_life		access_life_flag(t_thread_data *thread, t_access mode);
 long		access_time_last_eat(t_thread_data *thread, t_access mode);
 t_status	put_status(t_thread_data *thread, char *color, \
 								char *message, t_put_mode to);
