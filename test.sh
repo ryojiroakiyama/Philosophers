@@ -36,4 +36,6 @@ elif [ "$1" = "o3" ]; then
 do_test './philo 11 180 60 60'
 elif [ "$1" = "o4" ]; then
 do_test './philo 11 190 60 60'
+elif [ "$1" = "op1" ]; then
+do_test './philo 11 350 100 100 10 | grep "2 is eating" | wc -l'
 fi
