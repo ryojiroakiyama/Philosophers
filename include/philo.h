@@ -1,12 +1,12 @@
 #ifndef PHILO_H
 # define PHILO_H
 
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/time.h>
-#include <pthread.h>
-#include <libc.h>
-#include <stdbool.h>
+# include <unistd.h>
+# include <stdio.h>
+# include <sys/time.h>
+# include <pthread.h>
+# include <libc.h>
+# include <stdbool.h>
 
 // message to put there status
 # define EAT "eating"
@@ -100,7 +100,7 @@ typedef enum e_array_content
 	INDEX,
 	SIZE,
 	CONTENT_NUM
-} t_array_content;
+}	t_array_content;
 
 typedef struct s_thread_data
 {
@@ -138,7 +138,6 @@ typedef struct s_manage_data
 	int				mutexinfo[MUTEXIES_NUM][CONTENT_NUM];
 }	t_manage_data;
 
-
 // memory.c
 t_status	set_mdata_memory(t_manage_data *mdata);
 void		free_mdata_memory(t_manage_data *mdata);
@@ -158,12 +157,15 @@ t_status	set_thread_data(t_manage_data *mdata);
 // thread_functions.c
 t_life		access_life_flag(t_thread_data *thread, t_access mode);
 long		access_time_last_eat(t_thread_data *thread, t_access mode);
-t_status	put_status(t_thread_data *thread, char *color, char *message, t_put_mode to);
+t_status	put_status(t_thread_data *thread, char *color, \
+								char *message, t_put_mode to);
 // utils_wrapper.c
 t_status	do_usleep(useconds_t microseconds);
-long		gettimeofday_mili();
-int			thre_create(pthread_t *thread, void *(*start_routine)(void *), void *arg, char *message);
-int 		thre_join(pthread_t thread, char *message);
+long		gettimeofday_mili(void);
+int			thre_create(pthread_t *thread, \
+						void *(*start_routine)(void *), \
+								void *arg, char *message);
+int			thre_join(pthread_t thread, char *message);
 // utils.c
 void		ft_putstr_fd(char *s, int fd);
 long		ft_atol(char *str, bool *is_valid);

@@ -1,8 +1,8 @@
 #include "philo.h"
 
-static long	gettimeofday_micro()
+static long	gettimeofday_micro(void)
 {
-	struct timeval 	tv;
+	struct timeval	tv;
 
 	if (gettimeofday(&tv, NULL) == -1)
 	{
@@ -33,12 +33,12 @@ t_status	do_usleep(useconds_t microseconds)
 		else if (usleep(time_left / 2))
 			return (put_error("usleep"));
 	}
-	return(SUCCESS);
+	return (SUCCESS);
 }
 
-long	gettimeofday_mili()
+long	gettimeofday_mili(void)
 {
-	struct timeval 	tv;
+	struct timeval	tv;
 
 	if (gettimeofday(&tv, NULL) == -1)
 	{
@@ -48,8 +48,9 @@ long	gettimeofday_mili()
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-int thre_create
-(pthread_t *thread, void *(*start_routine)(void *), void *arg, char *message)
+int	thre_create(pthread_t *thread, \
+				void *(*start_routine)(void *), \
+						void *arg, char *message)
 {
 	int	ret;
 
@@ -63,9 +64,9 @@ int thre_create
 	return (ret);
 }
 
-int thre_join(pthread_t thread, char *message)
+int	thre_join(pthread_t thread, char *message)
 {
-	int ret;
+	int	ret;
 
 	ret = pthread_join(thread, NULL);
 	if (ret)

@@ -1,7 +1,7 @@
 #include "philo.h"
 
-static bool	is_full
-(t_thread_data *monitor, long pretime_last_eat, long time_last_eat)
+static bool	is_full(t_thread_data *monitor, long pretime_last_eat, \
+												long time_last_eat)
 {
 	if (monitor->times_must_eat != UNSPECIFIED && \
 		pretime_last_eat != time_last_eat)
@@ -10,30 +10,29 @@ static bool	is_full
 		if (monitor->times_ate >= monitor->times_must_eat)
 		{
 			put_status(monitor, MAGENTA, FULL, END);
-			return(true);
+			return (true);
 		}
 	}
-	return(false);
+	return (false);
 }
 
-static bool	is_died
-(t_thread_data *monitor, long time_last_eat)
+static bool	is_died(t_thread_data *monitor, long time_last_eat)
 {
 	long	time_now;
 	long	time_diff;
 
 	time_now = gettimeofday_mili();
 	if (time_now == -1)
-		return(true);
+		return (true);
 	time_diff = time_now - time_last_eat;
 	if (time_diff >= monitor->time[TO_DIE])
 	{
 		put_status(monitor, RED, DIE, END);
-		return(true);
+		return (true);
 	}
 	if (do_usleep(time_diff / 2) == FAIL)
-		return(true);
-	return(false);
+		return (true);
+	return (false);
 }
 
 void	*monitor_action(void *data)

@@ -17,7 +17,7 @@ typedef enum e_option
 **      [4]        [3]: time_to_sleep, long
 **      [5]        [4]: number_of_times_each_philosopher_must_eat, int
 */
-static t_status get_options(int argc, char *argv[], long options[OPTION_NUM])
+static t_status	get_options(int argc, char *argv[], long options[OPTION_NUM])
 {
 	bool	invalid;
 	int		idx_arg;
@@ -37,7 +37,7 @@ static t_status get_options(int argc, char *argv[], long options[OPTION_NUM])
 		idx_arg++;
 		idx_options++;
 	}
-	return(SUCCESS);
+	return (SUCCESS);
 }
 
 static t_status	set_mdata_number(t_manage_data *mdata, long options[OPTION_NUM])
@@ -72,7 +72,7 @@ int	main(int argc, char *argv[])
 		set_mdata_memory(&mdata) == SUCCESS && \
 		set_thread_data(&mdata) == SUCCESS && \
 		run_thread(&mdata) == SUCCESS)
-			return_status = SUCCESS;
+		return_status = SUCCESS;
 	else
 		return_status = FAIL;
 	free_mdata_memory(&mdata);

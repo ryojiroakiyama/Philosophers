@@ -18,13 +18,14 @@ long	access_time_last_eat(t_thread_data *thread, t_access mode)
 
 	pthread_mutex_lock(thread->mutex[TO_LAST_EAT]);
 	if (mode == EDIT)
- 		*(thread->time_last_eat) = gettimeofday_mili();
+		*(thread->time_last_eat) = gettimeofday_mili();
 	result = *(thread->time_last_eat);
 	pthread_mutex_unlock(thread->mutex[TO_LAST_EAT]);
 	return (result);
 }
 
-t_status	put_status(t_thread_data *thread, char *color, char *message, t_put_mode to)
+t_status	put_status(t_thread_data *thread, char *color, \
+								char *message, t_put_mode to)
 {
 	t_status	status;
 
@@ -33,7 +34,8 @@ t_status	put_status(t_thread_data *thread, char *color, char *message, t_put_mod
 	{
 		if (to == END)
 			access_life_flag(thread, EDIT);
-		printf("%s%ld %d is %s\n%s", color, gettimeofday_mili(), thread->order, message, RESET);
+		printf("%s%ld %d is %s\n%s", color, gettimeofday_mili(), \
+									thread->order, message, RESET);
 		status = SUCCESS;
 	}
 	else

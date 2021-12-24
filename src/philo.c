@@ -18,6 +18,7 @@ static t_status	philo_eat(t_thread_data *philo)
 static t_status	philo_sleep(t_thread_data *philo)
 {
 	t_status	status;
+
 	status = put_status(philo, BLUE, SLEEP, CONTINUE);
 	if (status == SUCCESS && do_usleep(philo->time[TO_SLEEP] * 1000) == FAIL)
 		status = FAIL;
@@ -39,16 +40,17 @@ void	*philo_action(void *data)
 
 	philo = (t_thread_data *)data;
 	monitor = philo->monitor;
-	if (thre_create(&(monitor->thread_id), &monitor_action, monitor, "for monitor") ||
+	if (thre_create(&(monitor->thread_id), &monitor_action, \
+										monitor, "for monitor") || \
 		(philo->order % 2 == 0 && do_usleep(INTERVAL) == FAIL))
 	{
 		put_status(philo, YEELOW, ERR, END);
-		return(data);
+		return (data);
 	}
 	while (1)
 	{
-		if (philo_eat(philo) == FAIL ||
-			philo_sleep(philo) == FAIL ||
+		if (philo_eat(philo) == FAIL || \
+			philo_sleep(philo) == FAIL || \
 			philo_think(philo) == FAIL)
 			break ;
 	}
