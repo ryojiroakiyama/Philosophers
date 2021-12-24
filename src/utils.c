@@ -37,34 +37,6 @@ static size_t	pass_isspace(char *str, size_t i)
 	return (i);
 }
 
-long	ft_atol(char *str, bool *invalid)
-{
-	size_t			i;
-	unsigned long	num;
-	int				sign;
-
-	i = 0;
-	num = 0;
-	sign = 1;
-	i = pass_isspace(str, i);
-	if (str[i] == '+')
-		i++;
-	else if (str[i] == '-' && ++i)
-		sign = -1;
-	*invalid = true;
-	while (str[i] && ('0' <= str[i] && str[i] <= '9'))
-	{
-		num = num * 10 + (str[i] - '0');
-		if (is_overflow(num, sign, invalid, LONG_MAX))
-			break ;
-		i++;
-	}
-	i = pass_isspace(str, i);
-	if (i == 0 || str[i] != '\0')
-		*invalid = true;
-	return ((long)num * sign);
-}
-
 int	ft_atoi(char *str, bool *invalid)
 {
 	size_t			i;

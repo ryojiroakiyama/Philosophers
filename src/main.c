@@ -11,10 +11,10 @@ typedef enum e_option
 }	t_option;
 
 /*
-**  argv[1] options[0]: number_of_philosophers, int
-**      [2]        [1]: time_to_die, long
-**      [3]        [2]: time_to_eat, long
-**      [4]        [3]: time_to_sleep, long
+**  argv[1] options[0]: number_of_philosophers, <= 1000
+**      [2]        [1]: time_to_die, int
+**      [3]        [2]: time_to_eat, int
+**      [4]        [3]: time_to_sleep, int
 **      [5]        [4]: number_of_times_each_philosopher_must_eat, int
 */
 static t_status	get_options(int argc, char *argv[], long options[OPTION_NUM])
@@ -28,11 +28,9 @@ static t_status	get_options(int argc, char *argv[], long options[OPTION_NUM])
 	idx_options = 0;
 	while (idx_arg < argc)
 	{
-		if (idx_options % 4)
-			options[idx_options] = ft_atol(argv[idx_arg], &invalid);
-		else
-			options[idx_options] = ft_atoi(argv[idx_arg], &invalid);
-		if (options[idx_options] < 0 || invalid)
+		options[idx_options] = ft_atoi(argv[idx_arg], &invalid);
+		if (options[NUM_OF_PHILO] > PHILO_MAX || \
+			options[idx_options] < 0 || invalid)
 			return (put_arg_error(argv[idx_arg]));
 		idx_arg++;
 		idx_options++;

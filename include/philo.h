@@ -29,6 +29,7 @@
 
 # define UNSPECIFIED -1
 # define INTERVAL 200
+# define PHILO_MAX 1000
 
 // status some one died or not
 typedef enum e_life
@@ -168,7 +169,6 @@ int			thre_create(pthread_t *thread, \
 int			thre_join(pthread_t thread, char *message);
 // utils.c
 void		ft_putstr_fd(char *s, int fd);
-long		ft_atol(char *str, bool *is_valid);
 int			ft_atoi(char *str, bool *is_valid);
 
 #endif
