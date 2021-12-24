@@ -42,20 +42,23 @@ static int	get_idx(t_manage_data *mdata, t_get_idx_mode mode, int content)
 
 t_status	set_mdata_memory(t_manage_data *mdata)
 {
-	mdata->threinfo[PHILOS][INDEX] = get_idx(mdata, THREADS, PHILOS);
+	int	idx;
+
 	mdata->threinfo[PHILOS][SIZE] = mdata->philo_num;
-	mdata->threinfo[MONITORS][INDEX] = get_idx(mdata, THREADS, MONITORS);
 	mdata->threinfo[MONITORS][SIZE] = mdata->philo_num;
+	idx = -1;
+	while(++idx < THREADS_NUM)
+		mdata->threinfo[idx][INDEX] = get_idx(mdata, THREADS, idx);
 	mdata->threads = (t_thread_data *)malloc(sizeof(t_thread_data) * \
 									get_idx(mdata, THREADS, THREADS_NUM));
 	if (!mdata->threads)
 		return (put_error("malloc for threads"));
-	mdata->mutexinfo[FORKS][INDEX] = get_idx(mdata, MUTEXIES, FORKS);
 	mdata->mutexinfo[FORKS][SIZE] = mdata->philo_num;
-	mdata->mutexinfo[LASTEATS][INDEX] = get_idx(mdata, MUTEXIES, LASTEATS);
 	mdata->mutexinfo[LASTEATS][SIZE] = mdata->philo_num;
-	mdata->mutexinfo[LIFEFLAGS][INDEX] = get_idx(mdata, MUTEXIES, LIFEFLAGS);
 	mdata->mutexinfo[LIFEFLAGS][SIZE] = 1;
+	idx = -1;
+	while(++idx < MUTEXIES_NUM)
+		mdata->mutexinfo[idx][INDEX] = get_idx(mdata, MUTEXIES, idx);
 	mdata->mutexies = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * \
 									get_idx(mdata, MUTEXIES, MUTEXIES_NUM));
 	if (!mdata->mutexies)

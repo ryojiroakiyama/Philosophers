@@ -47,7 +47,7 @@ t_status	put_arg_error(char *message)
 	printf("2: time_to_die (0-INT_MAX)\n");
 	printf("3: time_to_eat (0-INT_MAX)\n");
 	printf("4: time_to_sleep (0-INT_MAX)\n");
-	printf("5: number_of_times_each_philosopher_must_eat (is optional, (0-INT_MAX))%s\n", \
-																		RESET);
+	printf("5: number_of_times_each_philosopher_must_eat (is optional, \
+											(0-INT_MAX))%s\n", RESET);
 	return (FAIL);
 }
