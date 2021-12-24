@@ -39,13 +39,12 @@ void	*philo_action(void *data)
 
 	philo = (t_thread_data *)data;
 	monitor = philo->monitor;
-	if (thre_create(&(monitor->thread_id), &monitor_action, monitor, "for monitor"))
+	if (thre_create(&(monitor->thread_id), &monitor_action, monitor, "for monitor") ||
+		(philo->order % 2 == 0 && do_usleep(INTERVAL) == FAIL))
 	{
 		put_status(philo, YEELOW, ERR, END);
 		return(data);
 	}
-	if (philo->order % 2 == 0 && do_usleep(INTERVAL) == FAIL)
-		return(data);
 	while (1)
 	{
 		if (philo_eat(philo) == FAIL ||
