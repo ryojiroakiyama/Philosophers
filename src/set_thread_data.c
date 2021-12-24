@@ -27,7 +27,7 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, \
 								((philo_index + 1) % mdata->philo_num);
 	philo->mutex[TO_LAST_EAT] = \
 		mdata->mutexies + mdata->mutexinfo[LASTEATS][INDEX] + philo_index;
-	philo->mutex[TO_PUT] = mdata->mutexies + mdata->mutexinfo[PUTS][INDEX];
+	philo->mutex[TO_LIFE_FLAG] = mdata->mutexies + mdata->mutexinfo[LIFEFLAGS][INDEX];
 	philo->time_last_eat = &(philo->time[LAST_EAT]);
 	philo->monitor = \
 		mdata->threads + mdata->threinfo[MONITORS][INDEX] + philo_index;
@@ -42,7 +42,7 @@ static void	set_thread_data_monitor(t_thread_data *philo, \
 	copy_array(philo->time, monitor->time, TIME_NUM);
 	monitor->mutex[TO_RIGHT_FORK] = NULL;
 	monitor->mutex[TO_LEFT_FORK] = NULL;
-	monitor->mutex[TO_PUT] = philo->mutex[TO_PUT];
+	monitor->mutex[TO_LIFE_FLAG] = philo->mutex[TO_LIFE_FLAG];
 	monitor->mutex[TO_LAST_EAT] = philo->mutex[TO_LAST_EAT];
 	monitor->time_last_eat = philo->time_last_eat;
 	monitor->life_flag = philo->life_flag;
@@ -61,18 +61,5 @@ t_status	set_thread_data(t_manage_data *mdata)
 		set_thread_data_philo(mdata, a_philo, philo_index);
 		set_thread_data_monitor(a_philo, a_philo->monitor);
 	}
-	//philo_index = 0;
-	//while (philo_index < mdata->philo_num)
-	//{
-	//	if (philo_index % 2 == 1)
-	//		printf("%s", GREEN);
-	//	else
-	//		printf("%s", CYAN);
-	//	put_thread_data(mdata->philos + philo_index);
-	//	put_thread_data(mdata->monitors + philo_index);
-	//	printf("%s", RESET);
-	//	philo_index++;
-	//}
-	//exit(0);
 	return (SUCCESS);
 }
