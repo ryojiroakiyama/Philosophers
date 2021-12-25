@@ -16,8 +16,8 @@ static t_status	philo_eat(t_thread_data *philo)
 	else
 	{
 		philo->times_ate++;
-		access_time_last_eat(philo, EDIT);//↓?
 		status = put_status(philo, GREEN, EAT, CONTINUE);
+		access_time_last_eat(philo, EDIT);
 		if (status == SUCCESS && do_usleep(philo->time[TO_EAT] * 1000) == FAIL)
 			status = FAIL;
 	}
@@ -44,6 +44,8 @@ static t_status	philo_think(t_thread_data *philo)
 	return (status);
 }
 
+// (philo->mutex[TO_RIGHT_FORK] == philo->mutex[TO_LEFT_FORK])
+// means there is only one philosopher.
 void	*philo_action(void *data)
 {
 	t_thread_data	*philo;
@@ -52,17 +54,14 @@ void	*philo_action(void *data)
 	philo = (t_thread_data *)data;
 	if (philo->mutex[TO_RIGHT_FORK] == philo->mutex[TO_LEFT_FORK])
 	{
-		put_status(philo, RED, DIE, END_DIE);//usleep(die+10)
+		put_status(philo, RED, DIE, END_DIE);
 		return (data);
 	}
 	monitor = philo->monitor;
 	if (thre_create(&(monitor->thread_id), &monitor_action, \
 										monitor, "for monitor") || \
 		(philo->order % 2 == 0 && do_usleep(INTERVAL) == FAIL))
-	{
 		put_status(philo, YEELOW, ERR, END_ERROR);
-		return (data);//rm?
-	}
 	while (1)
 	{
 		if (philo_eat(philo) == FAIL || philo_sleep(philo) == FAIL || \
