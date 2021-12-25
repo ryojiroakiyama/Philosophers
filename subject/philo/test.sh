@@ -55,7 +55,11 @@ do_test './philo 11 350 100 100 0'
 elif [ "$1" = "op2" ]; then
 do_test './philo 11 350 100 100 1'
 elif [ "$1" = "op3" ]; then
-do_test './philo 11 350 100 100 2 | grep "2 is eating" | wc -l'
+do_test './philo 10 50000 1 1 42'
 elif [ "$1" = "op4" ]; then
+do_test './philo 11 350 100 100 2 | grep "2 is eating" | wc -l'
+elif [ "$1" = "op5" ]; then
 do_test './philo 11 350 100 100 42 | grep "2 is eating" | wc -l'
+elif [ "$1" = "op6" ]; then
+do_test './philo 10 5000 1 1 42 | grep "3 is eat" | wc -l'
 fi

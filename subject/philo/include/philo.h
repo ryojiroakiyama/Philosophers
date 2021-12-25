@@ -42,6 +42,7 @@ typedef enum e_access_mode
 {
 	READ,
 	EDIT,
+	ZERO,
 	ACCESS_NUM
 }	t_access_mode;
 
