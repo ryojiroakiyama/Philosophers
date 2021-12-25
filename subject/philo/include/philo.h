@@ -9,9 +9,9 @@
 # include <stdbool.h>
 
 // message to put there status
-# define EAT "eating"
-# define SLEEP "sleeping"
-# define THINK "thinking"
+# define EAT "is eating"
+# define SLEEP "is sleeping"
+# define THINK "is thinking"
 # define DIE "died"
 # define FULL "full"
 # define ERR "encounter error"

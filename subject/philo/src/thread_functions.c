@@ -22,7 +22,7 @@ t_status	put_status(t_thread_data *thread, char *color, \
 	{
 		if (to == END)
 			*thread->life_flag = SOME_ONE_DIED;
-		printf("%s%ld %d is %s\n%s", color, gettimeofday_mili(), \
+		printf("%s%ld %d %s\n%s", color, gettimeofday_mili(), \
 									thread->order, message, RESET);
 		status = SUCCESS;
 	}
