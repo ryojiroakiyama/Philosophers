@@ -40,7 +40,7 @@ static size_t	pass_isspace(char *str, size_t i)
 int	ft_atoi(char *str, bool *invalid)
 {
 	size_t			i;
-	unsigned int	num;
+	unsigned long	num;
 	int				sign;
 
 	i = 0;

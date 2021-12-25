@@ -33,18 +33,30 @@ static t_status	philo_think(t_thread_data *philo)
 	return (status);
 }
 
+static t_status	special_cases(t_thread_data *philo)
+{
+	if (philo->mutex[TO_RIGHT_FORK] == philo->mutex[TO_LEFT_FORK])
+	{
+		put_status(philo, RED, DIE, END);
+		return (SUCCESS);
+	}
+	else if (philo->times_must_eat == 0)
+	{
+		put_status(philo, MAGENTA, FULL, END);
+		return (SUCCESS);
+	}
+	return (FAIL);
+}
+
 void	*philo_action(void *data)
 {
 	t_thread_data	*philo;
 	t_thread_data	*monitor;
 
 	philo = (t_thread_data *)data;
-	monitor = philo->monitor;
-	if (philo->mutex[TO_RIGHT_FORK] == philo->mutex[TO_LEFT_FORK])
-	{
-		put_status(philo, RED, DIE, END);
+	if (special_cases(philo) == SUCCESS)
 		return (data);
-	}
+	monitor = philo->monitor;
 	if (thre_create(&(monitor->thread_id), &monitor_action, \
 										monitor, "for monitor") || \
 		(philo->order % 2 == 0 && do_usleep(INTERVAL) == FAIL))

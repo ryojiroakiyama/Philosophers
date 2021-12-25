@@ -43,7 +43,7 @@ t_status	put_arg_error(char *message)
 	ft_putstr_fd(message, STDERR_FILENO);
 	ft_putstr_fd("\n", STDERR_FILENO);
 	printf("%stype and order of arguments required:\n", GREEN);
-	printf("0 - INT_MAX\n");
+	printf("range: 0 - INT_MAX\n");
 	printf("1: philo_num\n");
 	printf("2: time_to_die\n");
 	printf("3: time_to_eat\n");
