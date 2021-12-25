@@ -55,7 +55,7 @@ t_status	set_mdata_memory(t_manage_data *mdata)
 		return (put_error("malloc for threads"));
 	mdata->mutexinfo[FORKS][SIZE] = mdata->philo_num;
 	mdata->mutexinfo[LASTEATS][SIZE] = mdata->philo_num;
-	mdata->mutexinfo[LIFEFLAGS][SIZE] = 1;
+	mdata->mutexinfo[PUTS][SIZE] = 1;
 	idx = -1;
 	while (++idx < MUTEXIES_NUM)
 		mdata->mutexinfo[idx][INDEX] = get_idx(mdata, MUTEXIES, idx);

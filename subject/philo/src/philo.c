@@ -37,12 +37,12 @@ static t_status	special_cases(t_thread_data *philo)
 {
 	if (philo->mutex[TO_RIGHT_FORK] == philo->mutex[TO_LEFT_FORK])
 	{
-		put_status(philo, RED, DIE, END);
+		put_status(philo, RED, DIE, END_DIE);
 		return (SUCCESS);
 	}
 	else if (philo->times_must_eat == 0)
 	{
-		put_status(philo, MAGENTA, FULL, END);
+		put_status(philo, MAGENTA, FULL, END_FULL);
 		return (SUCCESS);
 	}
 	return (FAIL);
@@ -61,7 +61,7 @@ void	*philo_action(void *data)
 										monitor, "for monitor") || \
 		(philo->order % 2 == 0 && do_usleep(INTERVAL) == FAIL))
 	{
-		put_status(philo, YEELOW, ERR, END);
+		put_status(philo, YEELOW, ERR, END_ERROR);
 		return (data);
 	}
 	while (1)

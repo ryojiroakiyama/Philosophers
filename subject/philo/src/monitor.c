@@ -9,7 +9,7 @@ static bool	is_full(t_thread_data *monitor, long pretime_last_eat, \
 		monitor->times_ate++;
 		if (monitor->times_ate >= monitor->times_must_eat)
 		{
-			put_status(monitor, MAGENTA, FULL, END);
+			put_status(monitor, MAGENTA, FULL, END_FULL);
 			return (true);
 		}
 	}
@@ -27,7 +27,7 @@ static bool	is_died(t_thread_data *monitor, long time_last_eat)
 	time_diff = time_now - time_last_eat;
 	if (time_diff >= monitor->time[TO_DIE])
 	{
-		put_status(monitor, RED, DIE, END);
+		put_status(monitor, RED, DIE, END_DIE);
 		return (true);
 	}
 	if (do_usleep(time_diff / 2) == FAIL)
@@ -54,6 +54,6 @@ void	*monitor_action(void *data)
 			break ;
 		pretime_last_eat = time_last_eat;
 	}
-	put_status(monitor, YEELOW, ERR, END);
+	put_status(monitor, YEELOW, ERR, END_ERROR);
 	return (data);
 }

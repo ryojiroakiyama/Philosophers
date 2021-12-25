@@ -13,7 +13,7 @@
 # define SLEEP "is sleeping"
 # define THINK "is thinking"
 # define DIE "died"
-# define FULL "full"
+# define FULL "is full"
 # define ERR "encounter error"
 
 // color settings
@@ -56,7 +56,9 @@ typedef enum e_access_mode
 typedef enum e_put_mode
 {
 	CONTINUE,
-	END,
+	END_DIE,
+	END_FULL,
+	END_ERROR,
 	PUT_MODE_NUM
 }	t_put_mode;
 
@@ -65,7 +67,7 @@ typedef enum e_mutex
 {
 	TO_RIGHT_FORK,
 	TO_LEFT_FORK,
-	TO_LIFE_FLAG,
+	TO_PUT,
 	TO_LAST_EAT,
 	MUTEX_NUM
 }	t_mutex;
@@ -93,7 +95,7 @@ typedef enum e_mutexies
 {
 	FORKS,
 	LASTEATS,
-	LIFEFLAGS,
+	PUTS,
 	MUTEXIES_NUM
 }	t_mutexies;
 
@@ -108,9 +110,11 @@ typedef enum e_array_content
 /*
 ** philosopher:
 ** 		time_last_eat = &time[LAST_EAT](it's member)
+** 		is_full = &full(is's member)
 ** 		life_flag = &mdata->life_flag
 ** monitor:
 ** 		time_last_eat = &time[LAST_EAT](philo's member)
+** 		is_full = &full(philo's member)
 ** 		life_flag = &mdata->life_flag
 */
 typedef struct s_thread_data
@@ -120,9 +124,11 @@ typedef struct s_thread_data
 	int						times_ate;
 	int						times_must_eat;
 	long					time[TIME_NUM];
-	pthread_mutex_t			*mutex[MUTEX_NUM];
 	long					*time_last_eat;
+	bool					full;
+	bool					*is_full;
 	t_life					*life_flag;
+	pthread_mutex_t			*mutex[MUTEX_NUM];
 	struct s_thread_data	*monitor;
 }	t_thread_data;
 

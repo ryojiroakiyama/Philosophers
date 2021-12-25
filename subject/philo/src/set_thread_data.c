@@ -19,6 +19,9 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, \
 	philo->times_ate = 0;
 	philo->times_must_eat = mdata->times_must_eat;
 	copy_array(mdata->time, philo->time, TIME_NUM);
+	philo->time_last_eat = &(philo->time[LAST_EAT]);
+	philo->full = false;
+	philo->is_full = &(philo->full);
 	philo->life_flag = &(mdata->life_flag);
 	philo->mutex[TO_RIGHT_FORK] = \
 		mdata->mutexies + mdata->mutexinfo[FORKS][INDEX] + philo_index;
@@ -27,9 +30,8 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, \
 								((philo_index + 1) % mdata->philo_num);
 	philo->mutex[TO_LAST_EAT] = \
 		mdata->mutexies + mdata->mutexinfo[LASTEATS][INDEX] + philo_index;
-	philo->mutex[TO_LIFE_FLAG] = \
-		mdata->mutexies + mdata->mutexinfo[LIFEFLAGS][INDEX];
-	philo->time_last_eat = &(philo->time[LAST_EAT]);
+	philo->mutex[TO_PUT] = \
+		mdata->mutexies + mdata->mutexinfo[PUTS][INDEX];
 	philo->monitor = \
 		mdata->threads + mdata->threinfo[MONITORS][INDEX] + philo_index;
 }
@@ -41,12 +43,14 @@ static void	set_thread_data_monitor(t_thread_data *philo, \
 	monitor->times_ate = philo->times_ate;
 	monitor->times_must_eat = philo->times_must_eat;
 	copy_array(philo->time, monitor->time, TIME_NUM);
+	monitor->time_last_eat = philo->time_last_eat;
+	monitor->full = philo->full;
+	monitor->is_full = philo->is_full;
+	monitor->life_flag = philo->life_flag;
 	monitor->mutex[TO_RIGHT_FORK] = NULL;
 	monitor->mutex[TO_LEFT_FORK] = NULL;
-	monitor->mutex[TO_LIFE_FLAG] = philo->mutex[TO_LIFE_FLAG];
+	monitor->mutex[TO_PUT] = philo->mutex[TO_PUT];
 	monitor->mutex[TO_LAST_EAT] = philo->mutex[TO_LAST_EAT];
-	monitor->time_last_eat = philo->time_last_eat;
-	monitor->life_flag = philo->life_flag;
 	monitor->monitor = NULL;
 }
 
