@@ -29,7 +29,6 @@
 
 # define UNSPECIFIED -1
 # define INTERVAL 200
-# define PHILO_MAX 1000
 
 // for life_flag
 typedef enum e_life

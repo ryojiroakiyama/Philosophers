@@ -29,8 +29,7 @@ static t_status	get_options(int argc, char *argv[], long options[OPTION_NUM])
 	while (idx_arg < argc)
 	{
 		options[idx_options] = ft_atoi(argv[idx_arg], &invalid);
-		if (options[NUM_OF_PHILO] > PHILO_MAX || \
-			options[idx_options] < 0 || invalid)
+		if (options[idx_options] < 0 || invalid)
 			return (put_arg_error(argv[idx_arg]));
 		idx_arg++;
 		idx_options++;

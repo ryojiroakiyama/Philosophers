@@ -47,7 +47,7 @@ t_status	set_mdata_memory(t_manage_data *mdata)
 	mdata->threinfo[PHILOS][SIZE] = mdata->philo_num;
 	mdata->threinfo[MONITORS][SIZE] = mdata->philo_num;
 	idx = -1;
-	while(++idx < THREADS_NUM)
+	while (++idx < THREADS_NUM)
 		mdata->threinfo[idx][INDEX] = get_idx(mdata, THREADS, idx);
 	mdata->threads = (t_thread_data *)malloc(sizeof(t_thread_data) * \
 									get_idx(mdata, THREADS, THREADS_NUM));
@@ -57,7 +57,7 @@ t_status	set_mdata_memory(t_manage_data *mdata)
 	mdata->mutexinfo[LASTEATS][SIZE] = mdata->philo_num;
 	mdata->mutexinfo[LIFEFLAGS][SIZE] = 1;
 	idx = -1;
-	while(++idx < MUTEXIES_NUM)
+	while (++idx < MUTEXIES_NUM)
 		mdata->mutexinfo[idx][INDEX] = get_idx(mdata, MUTEXIES, idx);
 	mdata->mutexies = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * \
 									get_idx(mdata, MUTEXIES, MUTEXIES_NUM));
