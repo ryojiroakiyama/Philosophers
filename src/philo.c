@@ -40,6 +40,11 @@ void	*philo_action(void *data)
 
 	philo = (t_thread_data *)data;
 	monitor = philo->monitor;
+	if (philo->mutex[TO_RIGHT_FORK] == philo->mutex[TO_LEFT_FORK])
+	{
+		put_status(philo, RED, DIE, END);
+		return (data);
+	}
 	if (thre_create(&(monitor->thread_id), &monitor_action, \
 										monitor, "for monitor") || \
 		(philo->order % 2 == 0 && do_usleep(INTERVAL) == FAIL))
@@ -49,8 +54,7 @@ void	*philo_action(void *data)
 	}
 	while (1)
 	{
-		if (philo_eat(philo) == FAIL || \
-			philo_sleep(philo) == FAIL || \
+		if (philo_eat(philo) == FAIL || philo_sleep(philo) == FAIL || \
 			philo_think(philo) == FAIL)
 			break ;
 	}
