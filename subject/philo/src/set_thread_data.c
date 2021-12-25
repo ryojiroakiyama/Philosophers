@@ -22,7 +22,7 @@ static void	set_thread_data_philo(t_manage_data *mdata, t_thread_data *philo, \
 	philo->time_last_eat = &(philo->time[LAST_EAT]);
 	philo->full = false;
 	philo->is_full = &(philo->full);
-	philo->life_flag = &(mdata->life_flag);
+	philo->is_died = &(mdata->die);
 	philo->mutex[TO_RIGHT_FORK] = \
 		mdata->mutexies + mdata->mutexinfo[FORKS][INDEX] + philo_index;
 	philo->mutex[TO_LEFT_FORK] = \
@@ -46,7 +46,7 @@ static void	set_thread_data_monitor(t_thread_data *philo, \
 	monitor->time_last_eat = philo->time_last_eat;
 	monitor->full = philo->full;
 	monitor->is_full = philo->is_full;
-	monitor->life_flag = philo->life_flag;
+	monitor->is_died = philo->is_died;
 	monitor->mutex[TO_RIGHT_FORK] = NULL;
 	monitor->mutex[TO_LEFT_FORK] = NULL;
 	monitor->mutex[TO_PUT] = philo->mutex[TO_PUT];

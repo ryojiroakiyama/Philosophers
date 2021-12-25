@@ -22,10 +22,10 @@ void	put_thread_data(t_thread_data *pdata)
 	printf("time[LAST_EAT]        %ld\n", pdata->time[LAST_EAT]);
 	printf("mutex[TO_RIGHT_FORK]  %p\n", pdata->mutex[TO_RIGHT_FORK]);
 	printf("mutex[TO_LEFT_FORK]   %p\n", pdata->mutex[TO_LEFT_FORK]);
-	printf("mutex[TO_PUT]   %p\n", pdata->mutex[TO_PUT]);
+	printf("mutex[TO_PUT]         %p\n", pdata->mutex[TO_PUT]);
 	printf("mutex[TO_LAST_EAT]    %p\n", pdata->mutex[TO_LAST_EAT]);
 	printf("time_last_eat         %p\n", pdata->time_last_eat);
-	printf("life_flag             %p\n", pdata->life_flag);
+	printf("is_died               %p\n", pdata->is_died);
 	printf("-----------------------------------------------\n");
 }
 

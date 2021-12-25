@@ -51,7 +51,7 @@ static t_status	set_mdata_number(t_manage_data *mdata, long options[OPTION_NUM])
 			mdata->time[idx_time] = options[idx_time + 1];
 		idx_time++;
 	}
-	mdata->life_flag = NO_ONE_DIED;
+	mdata->die = false;
 	return (SUCCESS);
 }
 

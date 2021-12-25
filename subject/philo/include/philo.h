@@ -30,13 +30,6 @@
 # define UNSPECIFIED -1
 # define INTERVAL 200
 
-// for life_flag
-typedef enum e_life
-{
-	NO_ONE_DIED,
-	SOME_ONE_DIED
-}	t_life;
-
 // status fucntions return
 typedef enum e_status
 {
@@ -111,11 +104,11 @@ typedef enum e_array_content
 ** philosopher:
 ** 		time_last_eat = &time[LAST_EAT](it's member)
 ** 		is_full = &full(is's member)
-** 		life_flag = &mdata->life_flag
+** 		is_died = &mdata->die
 ** monitor:
 ** 		time_last_eat = &time[LAST_EAT](philo's member)
 ** 		is_full = &full(philo's member)
-** 		life_flag = &mdata->life_flag
+** 		is_died = &mdata->die
 */
 typedef struct s_thread_data
 {
@@ -127,7 +120,7 @@ typedef struct s_thread_data
 	long					*time_last_eat;
 	bool					full;
 	bool					*is_full;
-	t_life					*life_flag;
+	bool					*is_died;
 	pthread_mutex_t			*mutex[MUTEX_NUM];
 	struct s_thread_data	*monitor;
 }	t_thread_data;
@@ -140,14 +133,14 @@ typedef struct s_thread_data
 **  	forks:		mutex for eating action. forks[i] is shared by philos[i] <-> philos[i+1].
 **  	lasteats:	mutex for access to time_last_eat(each thread's member)
 **					lasteats[i] is shared by philos[i] <-> monitors[i].
-**  	lifes:		mutex for access to life_flag. is shared by all threads.
+**  	puts:		mutex for access to put_status(). is shared by all threads.
 */
 typedef struct s_manage_data
 {
 	int				philo_num;
 	int				times_must_eat;
 	long			time[TIME_NUM];
-	t_life			life_flag;
+	bool			die;
 	t_thread_data	*threads;
 	int				threinfo[THREADS_NUM][CONTENT_NUM];
 	pthread_mutex_t	*mutexies;

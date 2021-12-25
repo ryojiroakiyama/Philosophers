@@ -18,10 +18,10 @@ t_status	put_status(t_thread_data *thread, char *color, \
 	t_status	status;
 
 	pthread_mutex_lock(thread->mutex[TO_PUT]);
-	if (*thread->life_flag == NO_ONE_DIED && *thread->is_full == false)
+	if (*thread->is_died == false && *thread->is_full == false)
 	{
 		if (to == END_DIE || to == END_ERROR)
-			*thread->life_flag = SOME_ONE_DIED;
+			*thread->is_died = true;
 		else if (to == END_FULL)
 			*thread->is_full = true;
 		printf("%s%ld %d %s\n%s", color, gettimeofday_mili(), \
