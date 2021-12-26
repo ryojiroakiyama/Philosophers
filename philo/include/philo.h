@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rakiyama <rakiyama@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/24 21:31:14 by rakiyama          #+#    #+#             */
+/*   Updated: 2021/12/26 21:01:18 by rakiyama         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILO_H
 # define PHILO_H
 
@@ -8,7 +20,7 @@
 # include <libc.h>
 # include <stdbool.h>
 
-// message to put there status
+// message of philo status
 # define FORK "has taken a fork"
 # define EAT "is eating"
 # define SLEEP "is sleeping"
@@ -102,16 +114,14 @@ typedef enum e_array_content
 	CONTENT_NUM
 }	t_array_content;
 
-/*
-** philosopher:
-** 		time_last_eat = &time[LAST_EAT](it's member)
-** 		is_full = &full(is's member)
-** 		is_died = &mdata->die
-** monitor:
-** 		time_last_eat = &time[LAST_EAT](philo's member)
-** 		is_full = &full(philo's member)
-** 		is_died = &mdata->die
-*/
+// philosopher:
+// 		time_last_eat = &time[LAST_EAT](it's member)
+// 		is_full = &full(is's member)
+// 		is_died = &mdata->die
+// monitor:
+// 		time_last_eat = &time[LAST_EAT](philo's member)
+// 		is_full = &full(philo's member)
+// 		is_died = &mdata->die
 typedef struct s_thread_data
 {
 	pthread_t				thread_id;
@@ -127,16 +137,15 @@ typedef struct s_thread_data
 	struct s_thread_data	*monitor;
 }	t_thread_data;
 
-/*
-** threads:
-** 		philos:		philos[i] has data of No.(i+1) philosopher thread.
-**  	monitors:	monitors[i] has data of No.(i+1) philosopher's monitor thread.
-** mutexies:
-**  	forks:		mutex for eating action. forks[i] is shared by philos[i] <-> philos[i+1].
-**  	lasteats:	mutex for access to time_last_eat(each thread's member)
-**					lasteats[i] is shared by philos[i] <-> monitors[i].
-**  	puts:		mutex for access to put_status(). is shared by all threads.
-*/
+// threads:
+// 		philos:		philos[i] has data of No.(i+1) philo thread.
+//  	monitors:	monitors[i] has data of No.(i+1) philo's monitor thread.
+// mutexies:
+//  	forks:		mutex for eating action.
+// 					a forks mutex is shared by philo[i] and philo[i+1]
+//  	lasteats:	mutex for access to time_last_eat(each thread's member)
+// 					a lasteats mutex is shared by philo[i] and monitor[i]
+//  	puts:		mutex for access to put_status(). is shared by all threads.
 typedef struct s_manage_data
 {
 	int				philo_num;
