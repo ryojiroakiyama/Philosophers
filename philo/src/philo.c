@@ -9,12 +9,13 @@ static t_status	philo_eat(t_thread_data *philo)
 	if (philo->times_must_eat != UNSPECIFIED && \
 		philo->times_ate >= philo->times_must_eat)
 	{
-		put_status(philo, MAGENTA, FULL, END_FULL);
+		put_status(philo, RED, FULL, END_FULL);
 		access_time_last_eat(philo, ZERO);
 		status = FAIL;
 	}
 	else
 	{
+		put_status(philo, MAGENTA, FORK, CONTINUE);
 		philo->times_ate++;
 		status = put_status(philo, GREEN, EAT, CONTINUE);
 		access_time_last_eat(philo, EDIT);

@@ -9,6 +9,7 @@
 # include <stdbool.h>
 
 // message to put there status
+# define FORK "has taken a fork"
 # define EAT "is eating"
 # define SLEEP "is sleeping"
 # define THINK "is thinking"
