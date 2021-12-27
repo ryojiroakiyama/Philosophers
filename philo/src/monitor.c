@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakiyama  <rakiyama@student.42tokyo.j      +#+  +:+       +#+        */
+/*   By: rakiyama <rakiyama@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/24 21:31:14 by rakiyama          #+#    #+#             */
-/*   Updated: 2021/12/26 20:34:11 by rakiyama         ###   ########.fr       */
+/*   Updated: 2021/12/27 10:29:29 by rakiyama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static bool	is_died(t_thread_data *monitor, long time_last_eat)
 		put_status(monitor, RED, DIE, END_DIE);
 		return (true);
 	}
-	if (do_usleep(time_diff / 2) == FAIL)
+	if (do_usleep(MONITOR_INTERVAL) == FAIL)
 		return (true);
 	return (false);
 }

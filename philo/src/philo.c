@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakiyama  <rakiyama@student.42tokyo.j      +#+  +:+       +#+        */
+/*   By: rakiyama <rakiyama@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/24 21:31:14 by rakiyama          #+#    #+#             */
-/*   Updated: 2021/12/26 20:35:38 by rakiyama         ###   ########.fr       */
+/*   Updated: 2021/12/27 10:28:36 by rakiyama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void	*philo_action(void *data)
 	monitor = philo->monitor;
 	if (thre_create(&(monitor->thread_id), &monitor_action, \
 										monitor, "for monitor") || \
-		(philo->order % 2 == 0 && do_usleep(INTERVAL) == FAIL))
+		(philo->order % 2 == 0 && do_usleep(PHILO_INTERVAL) == FAIL))
 		put_status(philo, YEELOW, ERR, END_ERROR);
 	while (1)
 	{

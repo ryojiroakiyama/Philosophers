@@ -6,7 +6,7 @@
 /*   By: rakiyama <rakiyama@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/24 21:31:14 by rakiyama          #+#    #+#             */
-/*   Updated: 2021/12/26 21:01:18 by rakiyama         ###   ########.fr       */
+/*   Updated: 2021/12/27 10:29:10 by rakiyama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,8 @@
 # define RESET "\033[0m"
 
 # define UNSPECIFIED -1
-# define INTERVAL 200
+# define MONITOR_INTERVAL 990
+# define PHILO_INTERVAL 200
 
 // status fucntions return
 typedef enum e_status
